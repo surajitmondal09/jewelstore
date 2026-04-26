@@ -113,7 +113,7 @@ const LikedProducts = () => {
         <p className='text-gray-500 mb-8 text-center max-w-md'>Tap the heart icon on any product to save it for later and quickly find your favorites here.</p>
         <button 
           onClick={() => router.push('/shop')} 
-          className="px-8 py-3 bg-blue-600 text-white font-medium rounded-xl hover:bg-blue-700 transition-all shadow-md hover:shadow-lg active:scale-95"
+          className="px-8 py-3 bg-primary text-white font-medium rounded-xl hover:bg-primary/90 transition-all shadow-md hover:shadow-lg active:scale-95"
         >
           Browse Products
         </button>
@@ -147,7 +147,7 @@ const LikedProducts = () => {
                           e.stopPropagation();
                           addToCart(item);
                       }}
-                      className="w-full bg-blue-600/90 hover:bg-blue-600 backdrop-blur-sm text-white font-medium py-2 rounded-lg flex items-center justify-center gap-2 shadow-lg active:scale-[0.98] transition-all"
+                      className="w-full bg-primary/90 hover:bg-primary backdrop-blur-sm text-white font-medium py-2 rounded-lg flex items-center justify-center gap-2 shadow-lg active:scale-[0.98] transition-all"
                   >
                       <IconShoppingCart size={18} />
                       <span className="text-sm">Add to Cart</span>
@@ -156,7 +156,7 @@ const LikedProducts = () => {
             </div>
             
             <div className='flex flex-col flex-1'>
-              <h3 className='font-semibold text-gray-900 dark:text-gray-100 line-clamp-2 text-sm leading-tight group-hover:text-blue-600 transition-colors mb-2'>{item.productName}</h3>
+              <h3 className='font-semibold text-gray-900 dark:text-gray-100 line-clamp-2 text-sm leading-tight group-hover:text-primary transition-colors mb-2'>{item.productName}</h3>
               
               <div className='mt-auto flex items-end justify-between'>
                 <div className='flex flex-col'>
@@ -175,7 +175,7 @@ const LikedProducts = () => {
                   e.stopPropagation();
                   addToCart(item)
                 }} 
-                className='sm:hidden flex-1 h-10 bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400 rounded-xl flex items-center justify-center gap-2 cursor-pointer active:scale-95 transition-colors'
+                className='sm:hidden flex-1 h-10 bg-primary/10 text-primary dark:bg-primary/30 dark:text-primary/80 rounded-xl flex items-center justify-center gap-2 cursor-pointer active:scale-95 transition-colors'
               >
                 <IconShoppingCart size={18} /> <span className='text-sm font-medium'>Add</span>
               </button>

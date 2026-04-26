@@ -271,7 +271,7 @@ export default function CartPage() {
 					<p className="text-gray-500 mb-8 text-center max-w-md">Looks like you haven&apos;t added anything to your cart yet. Browse our products and find something you love!</p>
 					<button 
 						onClick={() => router.push('/')} 
-						className="px-8 py-3 bg-blue-600 text-white font-medium rounded-xl hover:bg-blue-700 transition-all shadow-md hover:shadow-lg active:scale-95"
+						className="px-8 py-3 bg-primary text-white font-medium rounded-xl hover:bg-primary/90 transition-all shadow-md hover:shadow-lg active:scale-95"
 					>
 						Start Shopping
 					</button>
@@ -312,7 +312,7 @@ export default function CartPage() {
 									<div className="flex-1 flex flex-col sm:flex-row justify-between w-full gap-4">
 										<div className="flex-1 space-y-2">
 											{product && !product.error ? (
-												<a href={`/shop/product/${product.slug}`} className="font-semibold text-lg text-gray-900 dark:text-gray-100 hover:text-blue-600 dark:hover:text-blue-400 line-clamp-2 transition-colors">
+												<a href={`/shop/product/${product.slug}`} className="font-semibold text-lg text-gray-900 dark:text-gray-100 hover:text-primary dark:hover:text-primary/80 line-clamp-2 transition-colors">
 													{product.productName}
 												</a>
 											) : (
@@ -360,18 +360,18 @@ export default function CartPage() {
 							)}
 							
 							<div className="border-t pt-6">
-								<h3 className="font-semibold mb-4 flex items-center gap-2 text-lg"><IconMapPin size={20} className="text-blue-500"/> Shipping Address</h3>
+								<h3 className="font-semibold mb-4 flex items-center gap-2 text-lg"><IconMapPin size={20} className="text-primary/90"/> Shipping Address</h3>
 								{addresses.length > 0 ? (
 									<div className="space-y-3 max-h-75 overflow-y-auto pr-2 custom-scrollbar">
 										{addresses.map((address) => (
-											<label key={address.$id} className={`flex items-start gap-4 p-4 border rounded-xl cursor-pointer transition-all hover:shadow-md ${selectedAddress === address.$id ? 'border-blue-500 bg-blue-50/50 dark:bg-blue-900/10 ring-1 ring-blue-500' : 'hover:border-gray-400'}`}>
+											<label key={address.$id} className={`flex items-start gap-4 p-4 border rounded-xl cursor-pointer transition-all hover:shadow-md ${selectedAddress === address.$id ? 'border-primary/50 bg-primary/5 dark:bg-primary/10 ring-1 ring-primary/50' : 'hover:border-gray-400'}`}>
 												<input
 													type="radio"
 													name="address"
 													value={address.$id}
 													checked={selectedAddress === address.$id}
 													onChange={(e) => setSelectedAddress(e.target.value)}
-													className="mt-1.5 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+													className="mt-1.5 w-4 h-4 text-primary bg-gray-100 border-gray-300 focus:ring-primary/50 dark:focus:ring-primary/60 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
 												/>
 												<div className="text-sm flex-1">
 													<p className="font-semibold text-gray-900 dark:text-gray-100 text-base mb-1">{address.location}</p>
@@ -391,7 +391,7 @@ export default function CartPage() {
 							<div className="border-t pt-6">
 								<h3 className="font-semibold mb-4 text-lg">Payment Method</h3>
 								<div className="grid grid-cols-2 gap-4">
-									<label className={`flex flex-col items-center justify-center p-4 border rounded-xl cursor-pointer transition-all text-sm text-center ${paymentMethod === "online" ? 'border-blue-500 bg-blue-50/50 dark:bg-blue-900/10 ring-1 ring-blue-500 shadow-sm' : 'hover:border-gray-400 bg-gray-50/50 dark:bg-gray-800/30'}`}>
+									<label className={`flex flex-col items-center justify-center p-4 border rounded-xl cursor-pointer transition-all text-sm text-center ${paymentMethod === "online" ? 'border-primary/50 bg-primary/5 dark:bg-primary/10 ring-1 ring-primary/50 shadow-sm' : 'hover:border-gray-400 bg-gray-50/50 dark:bg-gray-800/30'}`}>
 										<input 
 											type="radio" 
 											className="sr-only"
@@ -403,7 +403,7 @@ export default function CartPage() {
 										<span className="font-semibold text-gray-900 dark:text-gray-100">Online Pay</span>
 										<span className="text-xs text-gray-500 mt-1.5 font-medium">(Cashfree)</span>
 									</label>
-									<label className={`flex flex-col items-center justify-center p-4 border rounded-xl cursor-pointer transition-all text-sm text-center ${paymentMethod === "cod" ? 'border-blue-500 bg-blue-50/50 dark:bg-blue-900/10 ring-1 ring-blue-500 shadow-sm' : 'hover:border-gray-400 bg-gray-50/50 dark:bg-gray-800/30'}`}>
+									<label className={`flex flex-col items-center justify-center p-4 border rounded-xl cursor-pointer transition-all text-sm text-center ${paymentMethod === "cod" ? 'border-primary/50 bg-primary/5 dark:bg-primary/10 ring-1 ring-primary/50 shadow-sm' : 'hover:border-gray-400 bg-gray-50/50 dark:bg-gray-800/30'}`}>
 										<input 
 											type="radio" 
 											className="sr-only"
@@ -421,13 +421,13 @@ export default function CartPage() {
 							<div className="border-t pt-6">
 								<div className="flex justify-between items-center mb-6 bg-gray-50 dark:bg-gray-800/50 p-4 rounded-xl">
 									<span className="font-bold text-lg">Total Amount</span>
-									<span className="font-black text-2xl text-blue-600 dark:text-blue-400">₹{subtotal.toFixed(2)}</span>
+									<span className="font-black text-2xl text-primary dark:text-primary/80">₹{subtotal.toFixed(2)}</span>
 								</div>
 								
 								<button
 									onClick={handleCreateOrder}
 									disabled={isOrdering || addresses.length === 0 || hasUnavailableItems}
-									className="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold text-lg rounded-xl shadow-md hover:shadow-lg disabled:opacity-50 disabled:shadow-none transition-all flex justify-center items-center gap-3 active:scale-[0.98]"
+									className="w-full py-4 bg-primary hover:bg-primary/90 text-white font-bold text-lg rounded-xl shadow-md hover:shadow-lg disabled:opacity-50 disabled:shadow-none transition-all flex justify-center items-center gap-3 active:scale-[0.98]"
 								>
 									{isOrdering ? (
 										<>

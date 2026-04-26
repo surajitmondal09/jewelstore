@@ -35,7 +35,7 @@ function VerifyEmailContent() {
     
   return (
     <div className='flex justify-center items-center h-screen'>
-      <p onClick={handleVerify} className='flex justify-center items-center p-2 rounded-lg text-white font-semibold bg-green-600 active:bg-green-700 active:scale-97 cursor-pointer'>Verify your email</p>
+      <p onClick={handleVerify} className='flex justify-center items-center p-2 rounded-lg text-white font-semibold bg-primary active:bg-primary/90 active:scale-97 cursor-pointer'>Verify your email</p>
     </div>
   )
 }

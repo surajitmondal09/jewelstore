@@ -137,7 +137,7 @@ export default function Login() {
             )}
 
       {message && (
-          <p className="text-center text-sm text-green-500 dark:text-green-400">{message}</p>
+          <p className="text-center text-sm text-primary/90 dark:text-primary/80">{message}</p>
         )}      
 
       <p className=" max-w-sm text-sm text-neutral-600 dark:text-neutral-300">

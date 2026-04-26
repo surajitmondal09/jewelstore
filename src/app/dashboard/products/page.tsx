@@ -508,7 +508,7 @@ function products() {
               <Input autoFocus onChange={(e)=> setStockValue(e.target.valueAsNumber)} type="number" placeholder='Enter new stock value' className='w-full'/>
               <div className='flex gap-3 justify-end mt-2'>
                 <Button variant="outline" onClick={() => setIsUpdatingStock(false)}>Cancel</Button>
-                <Button onClick={() => handleUpdateStock()} className='bg-green-600 hover:bg-green-700 text-white'>Update Stock</Button>
+                <Button onClick={() => handleUpdateStock()} className='bg-primary hover:bg-primary/90 text-white'>Update Stock</Button>
               </div>
             </CardContent>
           </Card>
@@ -523,7 +523,7 @@ function products() {
               {addingProduct || editingProduct ?
                 <Button variant="destructive" onClick={()=> resetProductForm()} className='w-full sm:w-auto'>Cancel</Button>
               :
-                <Button onClick={()=> getCtegories()} className='bg-green-600 hover:bg-green-700 text-white w-full sm:w-auto'>
+                <Button onClick={()=> getCtegories()} className='bg-primary hover:bg-primary/90 text-white w-full sm:w-auto'>
                   <IconPlus size={18} className='mr-2' /> Add Product
                 </Button>
               }
@@ -743,7 +743,7 @@ function products() {
                         <div className='flex items-center justify-between sm:justify-center w-full gap-2'>
                           <span className="sm:hidden text-sm text-muted-foreground">Stock:</span>
                           <div className='flex items-center gap-2 bg-muted/50 px-3 py-1.5 rounded-full'>
-                            <span className={`font-semibold text-sm ${stock > 0 ? 'text-green-600 dark:text-green-500' : 'text-red-500'}`}>{stock}</span>
+                            <span className={`font-semibold text-sm ${stock > 0 ? 'text-primary dark:text-primary/90' : 'text-red-500'}`}>{stock}</span>
                             <button className='text-muted-foreground hover:text-foreground transition-colors' onClick={ () => handleStock($id)}>
                               <IconEdit size={16} />
                             </button>
@@ -811,7 +811,7 @@ function products() {
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4 border-b">
                 <CardTitle className='text-xl'>Categories</CardTitle>
                 {!addingCategory && !editingCategory && (
-                  <Button size="sm" onClick={() => setAddingCategory(true)} className='bg-green-600 hover:bg-green-700 text-white'>
+                  <Button size="sm" onClick={() => setAddingCategory(true)} className='bg-primary hover:bg-primary/90 text-white'>
                     <IconPlus size={16} className='mr-1' /> Add
                   </Button>
                 )}
@@ -851,7 +851,7 @@ function products() {
                     </div>
                     <div className='flex gap-3 pt-2'>
                       <Button variant="outline" className='flex-1' onClick={resetCategoryForm}>Cancel</Button>
-                      <Button className='flex-1 bg-green-600 hover:bg-green-700 text-white' onClick={() => addCategory()}>
+                      <Button className='flex-1 bg-primary hover:bg-primary/90 text-white' onClick={() => addCategory()}>
                         {editingCategory ? "Update" : "Save"}
                       </Button>
                     </div>
@@ -869,7 +869,7 @@ function products() {
                       <div 
                         key={$id} 
                         className={`flex items-center p-3 gap-4 rounded-xl border transition-all hover:shadow-sm cursor-pointer ${
-                          selectedCategory === $id ? "border-green-500 bg-green-500/5 ring-1 ring-green-500/50" : "bg-card border-border/60 hover:border-primary/30"
+                          selectedCategory === $id ? "border-primary/50 bg-primary/80/5 ring-1 ring-primary/50/50" : "bg-card border-border/60 hover:border-primary/30"
                         }`}
                         onClick={() => subcategorys(subcategory, $id)}
                       >
@@ -885,7 +885,7 @@ function products() {
                           <div className='text-xs text-muted-foreground mt-0.5'>{subcategory?.length || 0} subcategories</div>
                         </div>
                         <div className='flex gap-1 shrink-0' onClick={(e) => e.stopPropagation()}>
-                          <Button size="icon" variant="ghost" className="h-9 w-9 text-blue-600 hover:text-blue-700 hover:bg-blue-100 dark:text-blue-400 dark:hover:bg-blue-900/50" onClick={() => {
+                          <Button size="icon" variant="ghost" className="h-9 w-9 text-primary hover:text-primary/90 hover:bg-primary/20 dark:text-primary/80 dark:hover:bg-primary/50" onClick={() => {
                             setCategoryName(categoryName)
                             if (categoryImage) setCategoryImage(categoryImage);
                             setEditingCategory($id)
@@ -923,7 +923,7 @@ function products() {
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4 border-b">
                   <CardTitle className='text-xl'>Subcategories</CardTitle>
                   {!addingSubcategory && !editingSubcategory && (
-                    <Button size="sm" onClick={() => setAddingSubcategory(true)} className='bg-green-600 hover:bg-green-700 text-white'>
+                    <Button size="sm" onClick={() => setAddingSubcategory(true)} className='bg-primary hover:bg-primary/90 text-white'>
                       <IconPlus size={16} className='mr-1' /> Add
                     </Button>
                   )}
@@ -963,7 +963,7 @@ function products() {
                       </div>
                       <div className='flex gap-3 pt-2'>
                         <Button variant="outline" className='flex-1' onClick={resetSubcategoryForm}>Cancel</Button>
-                        <Button className='flex-1 bg-green-600 hover:bg-green-700 text-white' onClick={() => addSubcategory()}>
+                        <Button className='flex-1 bg-primary hover:bg-primary/90 text-white' onClick={() => addSubcategory()}>
                           {editingSubcategory ? "Update" : "Save"}
                         </Button>
                       </div>
@@ -988,7 +988,7 @@ function products() {
                           </div>
                           <div className='font-semibold flex-1'>{subcategoryName}</div>
                           <div className='flex gap-1 shrink-0'>
-                            <Button size="icon" variant="ghost" className="h-9 w-9 text-blue-600 hover:text-blue-700 hover:bg-blue-100 dark:text-blue-400 dark:hover:bg-blue-900/50" onClick={() => {
+                            <Button size="icon" variant="ghost" className="h-9 w-9 text-primary hover:text-primary/90 hover:bg-primary/20 dark:text-primary/80 dark:hover:bg-primary/50" onClick={() => {
                               setSubcategoryName(subcategoryName)
                               if (subcategoryImage) setSubcategoryImage(subcategoryImage);
                               setEditingSubcategory($id)

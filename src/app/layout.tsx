@@ -14,15 +14,15 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "TechStore",
-  description: "TechStore is an online platform that offers a wide range of electronic products, including smartphones, laptops, tablets, and accessories. With a user-friendly interface and secure payment options, TechStore provides a seamless shopping experience for tech enthusiasts. Customers can browse through the latest gadgets, read reviews, and make informed purchasing decisions. TechStore also offers fast shipping and excellent customer support to ensure satisfaction with every order.  Whether you're looking for the latest smartphone or a high-performance laptop, TechStore has you covered with competitive prices and a diverse selection of products.",
-  keywords: ["TechStore", "online shopping", "electronics", "smartphones", "laptops", "tablets", "accessories", "user-friendly interface", "secure payment options", "seamless shopping experience", "tech enthusiasts", "latest gadgets", "reviews", "informed purchasing decisions", "fast shipping", "excellent customer support", "competitive prices", "diverse selection of products"],
+  title: "Aura Jewels",
+  description: "Aura Jewels is a luxury online destination offering an exclusive collection of fine jewelry. Discover timeless elegance, modern designs, and exceptional craftsmanship with our curated selection of rings, necklaces, earrings, and bracelets. Experience a seamless and premium shopping experience with secure payments, verified authenticity, and outstanding customer support. Find your perfect piece of luxury today.",
+  keywords: ["Aura Jewels", "luxury jewelry", "fine jewelry", "classic rings", "modern necklaces", "elegant earrings", "bracelets", "engagement rings", "premium jewelry shopping", "authentic diamonds", "gold accessories"],
   openGraph: {
-    title: "TechStore",
-    description: "TechStore is an online platform that offers a wide range of electronic products, including smartphones, laptops, tablets, and accessories. With a user-friendly interface and secure payment options, TechStore provides a seamless shopping experience for tech enthusiasts. Customers can browse through the latest gadgets, read reviews, and make informed purchasing decisions. TechStore also offers fast shipping and excellent customer support to ensure satisfaction with every order.  Whether you're looking for the latest smartphone or a high-performance laptop, TechStore has you covered with competitive prices and a diverse selection of products.",
-    url: "https://techstore.appwrite.network/",
+    title: "Aura Jewels",
+    description: "Aura Jewels is a luxury online destination offering an exclusive collection of fine jewelry. Discover timeless elegance, modern designs, and exceptional craftsmanship with our curated selection of rings, necklaces, earrings, and bracelets.",
+    url: "https://aurajewels.demo.network/",
     type: "website",
-    siteName: "TechStore",
+    siteName: "Aura Jewels",
   }  
 };
 

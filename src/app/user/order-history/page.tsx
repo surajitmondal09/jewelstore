@@ -38,10 +38,10 @@ type Order = {
 };
 
 const STATUS_COLORS: Record<string, string> = {
-  placed: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400 border border-blue-200 dark:border-blue-800",
+  placed: "bg-primary/20 text-primary dark:bg-primary/30 dark:text-primary/80 border border-primary/20 dark:border-primary/50",
   processing: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400 border border-yellow-200 dark:border-yellow-800",
   shipped: "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400 border border-purple-200 dark:border-purple-800",
-  delivered: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400 border border-green-200 dark:border-green-800",
+  delivered: "bg-primary/20 text-primary dark:bg-primary/30 dark:text-primary/80 border border-primary/20 dark:border-primary/50",
   "cancelled by customer": "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400 border border-red-200 dark:border-red-800",
   "cancelled by seller": "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400 border border-red-200 dark:border-red-800",
   refunded: "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400 border border-orange-200 dark:border-orange-800",
@@ -167,7 +167,7 @@ export default function CustomerOnlineOrderHistory() {
                   <div className="text-left sm:text-right">
                     <p className="font-bold text-lg text-foreground">₹{order.totalAmount.toFixed(2)}</p>
                     <div className="flex items-center gap-1.5 mt-0.5 sm:justify-end">
-                      <span className={`w-2 h-2 rounded-full ${order.paymentStatus === 'paid' ? 'bg-green-500' : 'bg-yellow-500'}`}></span>
+                      <span className={`w-2 h-2 rounded-full ${order.paymentStatus === 'paid' ? 'bg-primary/80' : 'bg-yellow-500'}`}></span>
                       <p className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">
                         {order.paymentStatus}
                       </p>

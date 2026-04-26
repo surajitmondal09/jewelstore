@@ -141,12 +141,12 @@ export default function SupportDashboard() {
                                                 </span>
                                                 <div className="flex items-center gap-1">
                                                     <IconMail size={14} />
-                                                    <a href={`mailto:${msg.email}`} className="hover:text-green-600 transition-colors">{msg.email}</a>
+                                                    <a href={`mailto:${msg.email}`} className="hover:text-primary transition-colors">{msg.email}</a>
                                                 </div>
                                                 {msg.phone && (
                                                     <div className="flex items-center gap-1">
                                                         <IconPhone size={14} />
-                                                        <a href={`tel:${msg.phone}`} className="hover:text-green-600 transition-colors">{msg.phone}</a>
+                                                        <a href={`tel:${msg.phone}`} className="hover:text-primary transition-colors">{msg.phone}</a>
                                                     </div>
                                                 )}
                                                 <div className="flex items-center gap-1">
@@ -160,7 +160,7 @@ export default function SupportDashboard() {
                                                 className={`px-3 py-1 rounded-full text-xs font-semibold tracking-wide ${
                                                     msg.status === "Open"
                                                         ? "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400"
-                                                        : "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400"
+                                                        : "bg-primary/20 text-primary dark:bg-primary/30 dark:text-primary/80"
                                                 }`}
                                             >
                                                 {msg.status}
@@ -168,7 +168,7 @@ export default function SupportDashboard() {
                                             <Button
                                                 variant={msg.status === "Open" ? "default" : "outline"}
                                                 size="sm"
-                                                className={msg.status === "Open" ? "bg-green-600 hover:bg-green-700" : ""}
+                                                className={msg.status === "Open" ? "bg-primary hover:bg-primary/90" : ""}
                                                 onClick={() => toggleStatus(msg.$id, msg.status)}
                                             >
                                                 {msg.status === "Open" ? (

@@ -56,7 +56,7 @@ export default function ContactPage() {
         <div className="min-h-screen bg-neutral-950 text-neutral-100 flex flex-col justify-center items-center py-20 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
             {/* Background elements */}
             <div className="absolute top-[-10%] left-[-10%] w-96 h-96 bg-purple-600/30 blur-[120px] rounded-full pointer-events-none" />
-            <div className="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-blue-600/20 blur-[120px] rounded-full pointer-events-none" />
+            <div className="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-primary/20 blur-[120px] rounded-full pointer-events-none" />
 
             <div className="max-w-7xl w-full mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 relative z-10">
                 {/* Left side: Information */}
@@ -76,7 +76,7 @@ export default function ContactPage() {
 
                     <div className="flex flex-col gap-8">
                         <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 bg-neutral-900 border border-neutral-800 rounded-xl flex items-center justify-center text-blue-400 shadow-sm shadow-blue-500/10">
+                            <div className="w-12 h-12 bg-neutral-900 border border-neutral-800 rounded-xl flex items-center justify-center text-primary/80 shadow-sm shadow-blue-500/10">
                                 <IconMail size={24} />
                             </div>
                             <div>

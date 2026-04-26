@@ -334,14 +334,14 @@ export default function Page() {
                         onClick={() => router.push(`/shop?category=${encodeURIComponent(categoryName)}`)}
                         className='shrink-0 snap-start group w-24 sm:w-28 md:w-32 lg:w-40 flex flex-col items-center cursor-pointer'
                         >
-                        <div className='w-full aspect-square mb-3 md:mb-4 rounded-full shadow-sm group-hover:shadow-xl border-4 border-transparent group-hover:border-blue-50 dark:group-hover:border-blue-900/30 overflow-hidden bg-gray-50 dark:bg-gray-800 transition-all duration-300'>
-                            <img
-                            src={categoryImage}
-                            alt={categoryName}
-                            className='w-full h-full object-cover group-hover:scale-110 transition-transform duration-500'
-                            />
-                        </div>
-                        <p className='font-semibold text-sm md:text-base text-gray-800 dark:text-gray-200 text-center group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors'>{categoryName}</p>
+                            <div className='w-full aspect-square mb-3 md:mb-4 rounded-full shadow-sm group-hover:shadow-xl border-4 border-transparent group-hover:border-primary/20 dark:group-hover:border-primary/30 overflow-hidden bg-gray-50 dark:bg-gray-800 transition-all duration-300'>
+                                <img
+                                src={categoryImage}
+                                alt={categoryName}
+                                className='w-full h-full object-cover group-hover:scale-110 transition-transform duration-500'
+                                />
+                            </div>
+                            <p className='font-semibold text-sm md:text-base text-gray-800 dark:text-gray-200 text-center group-hover:text-primary transition-colors'>{categoryName}</p>
                         </div>
                     ))}
                     </div>
@@ -363,7 +363,7 @@ export default function Page() {
                         </div>
                         <button
                             onClick={() => router.push('/shop')}
-                            className='group flex items-center gap-2 text-sm md:text-base font-semibold text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 transition-colors'
+                            className='group flex items-center gap-2 text-sm md:text-base font-semibold text-primary hover:text-primary/80 transition-colors'
                         >
                             View All <IconArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
                         </button>
@@ -412,7 +412,7 @@ export default function Page() {
                                                 e.stopPropagation();
                                                 addToCart(product);
                                             }}
-                                            className="w-full bg-blue-600/90 hover:bg-blue-600 backdrop-blur-sm text-white font-medium py-2 rounded-lg flex items-center justify-center gap-2 shadow-lg active:scale-[0.98] transition-all"
+                                            className="w-full bg-primary/90 hover:bg-primary backdrop-blur-sm text-primary-foreground font-medium py-2 rounded-lg flex items-center justify-center gap-2 shadow-lg active:scale-[0.98] transition-all"
                                         >
                                             <IconShoppingCart size={18} />
                                             <span className="text-sm">Add to Cart</span>
@@ -421,7 +421,7 @@ export default function Page() {
                                 </div>
                                 
                                 <div className="flex flex-col flex-1">
-                                    <h3 className='font-semibold text-gray-900 dark:text-gray-100 line-clamp-2 text-sm leading-tight group-hover:text-blue-600 transition-colors mb-2'>
+                                    <h3 className='font-semibold text-gray-900 dark:text-gray-100 line-clamp-2 text-sm leading-tight group-hover:text-primary transition-colors mb-2'>
                                         {productName}
                                     </h3>
                                     
@@ -438,7 +438,7 @@ export default function Page() {
                                                 e.stopPropagation();
                                                 addToCart(product);
                                             }}
-                                            className='sm:hidden p-2 bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400 rounded-full active:scale-95'
+                                            className='sm:hidden p-2 bg-primary/10 text-primary dark:bg-primary/20 rounded-full active:scale-95'
                                         >
                                             <IconShoppingCart size={18} />
                                         </button>

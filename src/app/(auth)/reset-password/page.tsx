@@ -39,7 +39,7 @@ function ResetPassContent() {
     }
   }
   return (
-    <div className='flex justify-center items-center h-screen p-2 bg-green-200 dark:bg-gray-900'>
+    <div className='flex justify-center items-center h-screen p-2 bg-primary/10 dark:bg-gray-900'>
       <div className='flex flex-col gap-4 p-2 w-100 border rounded-xl shadow-2xl bg-card'>
         <div className='flex justify-center'>
           <p className='font-semibold text-xl'>Reset Password</p>
@@ -56,7 +56,7 @@ function ResetPassContent() {
           <Input type="password" placeholder="Re-enter your password" onChange={(e) => setConfirmPassword(e.target.value)} />
         </div>
         <div className='flex justify-center'>
-          <button onClick={handelResetPass} className='bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-md cursor-pointer active:bg-green-700 active:scale-97'>
+          <button onClick={handelResetPass} className='bg-primary hover:bg-primary/90 text-white font-semibold py-2 px-4 rounded-md cursor-pointer active:bg-primary/90 active:scale-97'>
             Reset Password
           </button>
         </div>

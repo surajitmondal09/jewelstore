@@ -20,7 +20,7 @@ export async function POST(request: NextRequest){
             try {
                 await tablesDB.createRow(db, notificationTable, ID as string + Date.now().toString().slice(-6), {
                     userId: ID,
-                    notification: `Welcome to TechShop, ${name.split(' ')[0]}! We're glad to have you here. Check out our latest deals!`
+                    notification: `Welcome to Aura Jewels, ${name.split(' ')[0]}! We're glad to have you here. Check out our newest collections!`
                 });
             } catch (notifErr) {
                 console.error("Failed to create welcome notification", notifErr);

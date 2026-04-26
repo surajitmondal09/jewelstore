@@ -92,7 +92,7 @@ function Navbar() {
             <div className="flex items-center gap-3 sm:gap-6">
               <button 
                 onClick={() => setIsSidebarOpen(true)}
-                className="sm:hidden p-2 -ml-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors focus:outline-none focus:ring-2 focus:ring-green-500"
+                className="sm:hidden p-2 -ml-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors focus:outline-none focus:ring-2 focus:ring-primary"
                 aria-label="Open menu"
               >
                 <IconMenu2 size={24} />
@@ -102,15 +102,15 @@ function Navbar() {
                 href="/" 
                 className="flex items-center gap-2 group cursor-pointer"
               >
-                <span className="text-2xl font-black bg-linear-to-r from-green-600 to-emerald-500 bg-clip-text text-transparent group-hover:from-green-500 group-hover:to-emerald-400 transition-all duration-300 tracking-tight">
-                  TechShop
+                <span className="text-2xl font-black bg-linear-to-r from-primary/90 to-primary bg-clip-text text-transparent group-hover:from-primary group-hover:to-primary/80 transition-all duration-300 tracking-tight">
+                  Aura Jewels
                 </span>
               </Link>
 
               {user?.labels?.includes("owner") && (
                 <Link 
                   href="/dashboard" 
-                  className="hidden md:flex items-center px-3 py-1.5 text-sm font-semibold text-green-700 dark:text-green-400 bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-800 rounded-full hover:bg-green-100 dark:hover:bg-green-900/50 transition-all active:scale-95"
+                  className="hidden md:flex items-center px-3 py-1.5 text-sm font-semibold text-primary bg-primary/10 border border-primary/20 rounded-full hover:bg-primary/20 transition-all active:scale-95"
                 >
                   Dashboard
                 </Link>
@@ -125,13 +125,13 @@ function Navbar() {
                   <Link 
                     key={link.name}
                     href={link.href} 
-                    className={`relative font-medium text-sm transition-colors hover:text-green-600 dark:hover:text-green-400 ${
-                      isActive ? "text-green-600 dark:text-green-400" : "text-gray-600 dark:text-gray-300"
+                    className={`relative font-medium text-sm transition-colors hover:text-primary ${
+                      isActive ? "text-primary" : "text-gray-600 dark:text-gray-300"
                     }`}
                   >
                     {link.name}
                     {isActive && (
-                      <span className="absolute -bottom-5 left-0 w-full h-0.5 bg-green-600 dark:bg-green-400 rounded-t-full" />
+                      <span className="absolute -bottom-5 left-0 w-full h-0.5 bg-primary rounded-t-full" />
                     )}
                   </Link>
                 );
@@ -188,7 +188,7 @@ function Navbar() {
                   <div className="relative">
                     <button 
                       onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                      className="relative block w-10 h-10 rounded-full overflow-hidden border-2 border-transparent hover:border-green-500 dark:hover:border-green-400 focus:outline-none focus:border-green-500 transition-all active:scale-95 shadow-sm"
+                      className="relative block w-10 h-10 rounded-full overflow-hidden border-2 border-transparent hover:border-primary focus:outline-none focus:border-primary transition-all active:scale-95 shadow-sm"
                     >
                       <Image
                         src={userData?.avatar || "/user.png"}
@@ -261,7 +261,7 @@ function Navbar() {
               ) : (
                 <button
                   onClick={() => router.push("/login")}
-                  className="px-5 py-2 text-sm font-semibold text-white bg-green-600 rounded-full hover:bg-green-700 hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 active:scale-95 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 dark:focus:ring-offset-gray-900"
+                  className="px-5 py-2 text-sm font-semibold text-primary-foreground bg-primary rounded-full hover:bg-primary/90 hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 active:scale-95 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary dark:focus:ring-offset-gray-900"
                 >
                   Login
                 </button>
@@ -287,8 +287,8 @@ function Navbar() {
       >
         <div className="flex flex-col h-full">
           <div className="flex items-center justify-between p-5 border-b border-gray-100 dark:border-gray-800">            
-            <span className="text-2xl font-black bg-linear-to-r from-green-600 to-emerald-500 bg-clip-text text-transparent">
-              TechShop
+            <span className="text-2xl font-black bg-linear-to-r from-primary/90 to-primary bg-clip-text text-transparent">
+              Aura Jewels
             </span>
             <button 
               onClick={closeSidebar} 
@@ -309,7 +309,7 @@ function Navbar() {
                   onClick={closeSidebar} 
                   className={`flex items-center gap-4 px-4 py-3.5 rounded-xl font-medium transition-colors ${
                     isActive 
-                      ? "bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400" 
+                      ? "bg-primary/10 text-primary" 
                       : "text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-900"
                   }`}
                 >
@@ -325,7 +325,7 @@ function Navbar() {
                 onClick={closeSidebar} 
                 className={`flex md:hidden items-center gap-4 px-4 py-3.5 rounded-xl font-medium transition-colors ${
                   pathname === "/dashboard" 
-                    ? "bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400" 
+                    ? "bg-primary/10 text-primary" 
                     : "text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-900"
                 }`}
               >
@@ -339,7 +339,7 @@ function Navbar() {
             <div className="p-4 border-t border-gray-100 dark:border-gray-800">
               <button
                 onClick={() => { closeSidebar(); router.push("/login"); }}
-                className="w-full py-3 text-sm font-semibold text-white bg-green-600 rounded-xl hover:bg-green-700 transition-colors"
+                className="w-full py-3 text-sm font-semibold text-primary-foreground bg-primary rounded-xl hover:bg-primary/90 transition-colors"
               >
                 Login
               </button>

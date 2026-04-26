@@ -115,7 +115,7 @@ function ProductList({ productsPromise, productSearch, router, userData, user, o
                                 e.stopPropagation();
                                 onAddToCart(product);
                             }}
-                            className="w-full bg-blue-600/90 hover:bg-blue-600 backdrop-blur-sm text-white font-medium py-2 rounded-lg flex items-center justify-center gap-2 shadow-lg active:scale-[0.98] transition-all"
+                            className="w-full bg-primary/90 hover:bg-primary backdrop-blur-sm text-white font-medium py-2 rounded-lg flex items-center justify-center gap-2 shadow-lg active:scale-[0.98] transition-all"
                         >
                             <IconShoppingCart size={18} />
                             <span className="text-sm">Add to Cart</span>
@@ -124,7 +124,7 @@ function ProductList({ productsPromise, productSearch, router, userData, user, o
                 </div>
                 
                 <div className="flex flex-col flex-1">
-                  <h3 className='font-semibold text-gray-900 dark:text-gray-100 line-clamp-2 text-sm leading-tight group-hover:text-blue-600 transition-colors mb-2'>
+                  <h3 className='font-semibold text-gray-900 dark:text-gray-100 line-clamp-2 text-sm leading-tight group-hover:text-primary transition-colors mb-2'>
                     {productName}
                   </h3>
                   
@@ -141,7 +141,7 @@ function ProductList({ productsPromise, productSearch, router, userData, user, o
                             e.stopPropagation();
                             onAddToCart(product);
                         }}
-                        className='sm:hidden p-2 bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400 rounded-full active:scale-95'
+                        className='sm:hidden p-2 bg-primary/10 text-primary dark:bg-primary/30 dark:text-primary/80 rounded-full active:scale-95'
                     >
                         <IconShoppingCart size={18} />
                     </button>
@@ -215,7 +215,7 @@ function CategoryList({
                     
                     return(
                         <div key={$id} className='flex flex-col'>
-                        <div className={`group flex flex-row justify-between items-center rounded-xl transition-all duration-200 border border-transparent ${isActive ? "bg-blue-50/50 border-blue-100 dark:bg-blue-900/10 dark:border-blue-900/30" : "hover:bg-gray-50 dark:hover:bg-gray-800/50"}`}>
+                        <div className={`group flex flex-row justify-between items-center rounded-xl transition-all duration-200 border border-transparent ${isActive ? "bg-primary/5 border-primary/10 dark:bg-primary/10 dark:border-primary/30" : "hover:bg-gray-50 dark:hover:bg-gray-800/50"}`}>
                             <div
                             onClick={() => {
                                 getSubcategories($id, subcategory, categoryName);
@@ -225,12 +225,12 @@ function CategoryList({
                             <div className='h-12 w-12 overflow-hidden rounded-xl shrink-0 bg-white shadow-sm border border-gray-100 dark:border-gray-800 dark:bg-gray-900'>
                                 <img src={categoryImage} alt={categoryName} className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-300"/>
                             </div>
-                            <div className={`font-semibold text-sm truncate ${isActive ? 'text-blue-700 dark:text-blue-400' : 'text-gray-700 dark:text-gray-300'}`}>{categoryName}</div>
+                            <div className={`font-semibold text-sm truncate ${isActive ? 'text-primary/90 dark:text-primary/80' : 'text-gray-700 dark:text-gray-300'}`}>{categoryName}</div>
                             </div>
                             
                             {subcategory && subcategory.length > 0 && (
                                 <button
-                                    className={`p-2 mr-1 rounded-lg transition-colors ${isExpanded ? 'text-blue-600 bg-blue-100/50 dark:text-blue-400 dark:bg-blue-900/30' : 'text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800'}`}
+                                    className={`p-2 mr-1 rounded-lg transition-colors ${isExpanded ? 'text-primary bg-primary/20/50 dark:text-primary/80 dark:bg-primary/30' : 'text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800'}`}
                                     onClick={(e) => {
                                         e.stopPropagation();
                                         if (!isActive) {
@@ -258,7 +258,7 @@ function CategoryList({
                                             if (onCategorySelect) onCategorySelect();
                                         }}
                                         key={subId}
-                                        className={`flex gap-3 p-2 rounded-xl cursor-pointer transition-all ${isSubActive ? "bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-400 font-medium" : "text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-200"}`}>
+                                        className={`flex gap-3 p-2 rounded-xl cursor-pointer transition-all ${isSubActive ? "bg-primary/10 text-primary/90 dark:bg-primary/20 dark:text-primary/80 font-medium" : "text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-200"}`}>
                                         <div className='h-8 w-8 overflow-hidden rounded-lg shrink-0 border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900'>
                                             <img src={subcategoryImage} alt={subcategoryName} className="object-cover w-full h-full"/>
                                         </div>
@@ -439,7 +439,7 @@ function ShopContent() {
       <div className={`fixed top-0 left-0 h-full w-70 bg-card shadow-2xl z-50 transform transition-transform duration-300 ease-out md:hidden flex flex-col ${isCategoryBarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
         <div className='p-4 border-b flex justify-between items-center bg-gray-50/50 dark:bg-gray-800/20'>
             <div className="flex items-center gap-2">
-                <div className="p-2 bg-blue-100 text-blue-600 rounded-lg dark:bg-blue-900/30 dark:text-blue-400">
+                <div className="p-2 bg-primary/20 text-primary rounded-lg dark:bg-primary/30 dark:text-primary/80">
                     <IconCategory size={20} />
                 </div>
                 <p className='font-bold text-lg'>Categories</p>
@@ -462,7 +462,7 @@ function ShopContent() {
                     placeholder='Find category...'
                     value={categorySearch}
                     onChange={(e) => setCategorySearch(e.target.value)}
-                    className='w-full pl-10 pr-4 py-2.5 border rounded-xl bg-gray-50 hover:bg-white focus:bg-white dark:bg-gray-800/50 dark:border-gray-700 dark:focus:bg-gray-800 transition-colors text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none'
+                    className='w-full pl-10 pr-4 py-2.5 border rounded-xl bg-gray-50 hover:bg-white focus:bg-white dark:bg-gray-800/50 dark:border-gray-700 dark:focus:bg-gray-800 transition-colors text-sm focus:ring-2 focus:ring-primary/50/20 focus:border-primary/50 outline-none'
                 />
             </div>
 
@@ -492,7 +492,7 @@ function ShopContent() {
         <div className='bg-card p-5 shadow-sm border rounded-2xl sticky top-24 max-h-[calc(100vh-8rem)] overflow-y-auto custom-scrollbar'>
           <div className='mb-6'>
             <div className="flex items-center gap-2 mb-4 pb-4 border-b">
-                <div className="p-2 bg-blue-50 text-blue-600 rounded-lg dark:bg-blue-900/20 dark:text-blue-400">
+                <div className="p-2 bg-primary/10 text-primary rounded-lg dark:bg-primary/20 dark:text-primary/80">
                     <IconCategory size={20} />
                 </div>
                 <h2 className='font-bold text-xl text-gray-900 dark:text-white tracking-tight'>Categories</h2>
@@ -507,7 +507,7 @@ function ShopContent() {
                     placeholder='Search categories...'
                     value={categorySearch}
                     onChange={(e) => setCategorySearch(e.target.value)}
-                    className='w-full pl-10 pr-4 py-2.5 border rounded-xl bg-gray-50 hover:bg-white focus:bg-white dark:bg-gray-800/50 dark:border-gray-700 dark:focus:bg-gray-800 transition-colors text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none'
+                    className='w-full pl-10 pr-4 py-2.5 border rounded-xl bg-gray-50 hover:bg-white focus:bg-white dark:bg-gray-800/50 dark:border-gray-700 dark:focus:bg-gray-800 transition-colors text-sm focus:ring-2 focus:ring-primary/50/20 focus:border-primary/50 outline-none'
                 />
             </div>
           </div>
@@ -558,7 +558,7 @@ function ShopContent() {
               placeholder='Search products...'
               value={productSearch}
               onChange={(e) => setProductSearch(e.target.value)}
-              className='w-full pl-10 pr-4 py-3 border rounded-xl bg-card shadow-sm hover:shadow-md focus:shadow-md focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all dark:bg-gray-800 dark:border-gray-700'
+              className='w-full pl-10 pr-4 py-3 border rounded-xl bg-card shadow-sm hover:shadow-md focus:shadow-md focus:ring-2 focus:ring-primary/50/20 focus:border-primary/50 outline-none transition-all dark:bg-gray-800 dark:border-gray-700'
             />
           </div>  
         </div>

@@ -99,7 +99,7 @@ export default function NotificationPage() {
         <div className="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8 min-h-[70vh]">
             <div className="flex items-center justify-between gap-3 mb-8">
                 <div className="flex items-center gap-3">
-                    <div className="p-3 bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 rounded-xl">
+                    <div className="p-3 bg-primary/20 dark:bg-primary/30 text-primary dark:text-primary/80 rounded-xl">
                         <IconBell size={28} />
                     </div>
                     <div>
@@ -123,7 +123,7 @@ export default function NotificationPage() {
             <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border border-gray-200 dark:border-gray-800 rounded-3xl shadow-xs overflow-hidden transition-all">
                 {loading && page === 1 ? (
                     <div className="flex flex-col items-center justify-center p-20 text-gray-500 dark:text-gray-400">
-                        <IconLoader2 size={40} className="animate-spin text-green-500 mb-4" />
+                        <IconLoader2 size={40} className="animate-spin text-primary/90 mb-4" />
                         <p className="font-medium animate-pulse">Loading notifications...</p>
                     </div>
                 ) : notifications.length === 0 ? (
@@ -143,7 +143,7 @@ export default function NotificationPage() {
                                 key={notif.$id || idx} 
                                 className="group p-5 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors flex gap-4 items-start duration-300"
                             >
-                                <div className="mt-1 flex-shrink-0 w-10 h-10 rounded-full bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center text-blue-500 dark:text-blue-400 border border-blue-100 dark:border-blue-800">
+                                <div className="mt-1 flex-shrink-0 w-10 h-10 rounded-full bg-primary/10 dark:bg-primary/20 flex items-center justify-center text-primary/90 dark:text-primary/80 border border-primary/10 dark:border-primary/50">
                                     <IconInfoCircle size={20} />
                                 </div>
                                 <div className="flex-1 min-w-0">
@@ -168,7 +168,7 @@ export default function NotificationPage() {
                     <button 
                         onClick={handleLoadMore}
                         disabled={loading}
-                        className="px-6 py-2.5 rounded-full font-medium text-sm text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 shadow-sm hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-green-600 dark:hover:text-green-400 transition-all focus:outline-none focus:ring-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 group"
+                        className="px-6 py-2.5 rounded-full font-medium text-sm text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 shadow-sm hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-primary dark:hover:text-primary/80 transition-all focus:outline-none focus:ring-2 focus:ring-primary/50 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 group"
                     >
                         {loading && <IconLoader2 size={16} className="animate-spin" />}
                         {loading ? 'Loading...' : 'Load more'}

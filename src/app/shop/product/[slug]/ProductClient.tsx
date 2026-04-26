@@ -420,7 +420,7 @@ export default function ProductPage() {
         <div className="p-8 text-center bg-card rounded-2xl shadow-sm border max-w-md w-full">
             <h2 className="text-2xl font-bold mb-2">Product Not Found</h2>
             <p className="text-gray-500 mb-6">The product you are looking for does not exist or has been removed.</p>
-            <button onClick={() => router.push('/shop')} className="px-6 py-3 bg-blue-600 text-white rounded-xl font-medium hover:bg-blue-700 transition-colors">
+            <button onClick={() => router.push('/shop')} className="px-6 py-3 bg-primary text-white rounded-xl font-medium hover:bg-primary/90 transition-colors">
                 Back to Shop
             </button>
         </div>
@@ -461,7 +461,7 @@ export default function ProductPage() {
                     <button
                         key={i}
                         onClick={() => setSelectedImage(i)}
-                        className={`h-24 w-24 shrink-0 rounded-2xl overflow-hidden border-2 transition-all duration-200 ${selectedImage === i ? 'ring-2 ring-offset-2 ring-blue-500 border-transparent shadow-md' : 'border-transparent hover:border-gray-300 dark:hover:border-gray-600 opacity-70 hover:opacity-100'} focus:outline-none bg-gray-50 dark:bg-gray-800/50`}
+                        className={`h-24 w-24 shrink-0 rounded-2xl overflow-hidden border-2 transition-all duration-200 ${selectedImage === i ? 'ring-2 ring-offset-2 ring-primary/50 border-transparent shadow-md' : 'border-transparent hover:border-gray-300 dark:hover:border-gray-600 opacity-70 hover:opacity-100'} focus:outline-none bg-gray-50 dark:bg-gray-800/50`}
                     >
                         <img src={src} alt={`thumb-${i}`} className="w-full h-full object-cover" />
                     </button>
@@ -487,7 +487,7 @@ export default function ProductPage() {
                   {product.price > product.finalPrice && (
                       <>
                           <span className='text-lg sm:text-xl font-medium line-through text-gray-400'>₹{product.price}</span>
-                          <span className='text-xs sm:text-sm font-bold text-green-600 bg-green-50 dark:bg-green-900/20 px-2 py-1 rounded-lg mb-1'>You save ₹{product.price - product.finalPrice}</span>
+                          <span className='text-xs sm:text-sm font-bold text-primary bg-primary/10 dark:bg-primary/20 px-2 py-1 rounded-lg mb-1'>You save ₹{product.price - product.finalPrice}</span>
                       </>
                   )}
                 </div>
@@ -524,13 +524,13 @@ export default function ProductPage() {
                         <button onClick={() => changeQty(1)} className="p-2 hover:bg-white dark:hover:bg-gray-700 rounded-lg transition-colors text-gray-600 dark:text-gray-300 active:scale-95"><IconPlus size={18} /></button>
                     </div>
 
-                    <button onClick={addToCart} className="flex-1 flex justify-center items-center gap-2 py-3.5 bg-blue-50 hover:bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 dark:text-blue-400 font-bold rounded-xl transition-all active:scale-95 border border-blue-100 dark:border-blue-900/30">
+                    <button onClick={addToCart} className="flex-1 flex justify-center items-center gap-2 py-3.5 bg-primary/10 hover:bg-primary/20 text-primary/90 dark:bg-primary/30 dark:hover:bg-primary/50 dark:text-primary/80 font-bold rounded-xl transition-all active:scale-95 border border-primary/10 dark:border-primary/30">
                         <IconShoppingCart size={20} /> 
                         <span>Add to Cart</span>
                     </button>
                 </div>
                 
-                <button onClick={handleOrderNow} className="w-full flex justify-center items-center gap-2 py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold text-lg rounded-xl shadow-md hover:shadow-lg transition-all active:scale-[0.98]">
+                <button onClick={handleOrderNow} className="w-full flex justify-center items-center gap-2 py-4 bg-primary hover:bg-primary/90 text-white font-bold text-lg rounded-xl shadow-md hover:shadow-lg transition-all active:scale-[0.98]">
                   Buy It Now
                 </button>
               </div>
@@ -538,7 +538,7 @@ export default function ProductPage() {
 
             {/* Direct Checkout Modal / Card */}
             {showDirectCheckout && (
-              <div id="checkout-section" className="bg-card p-6 md:p-8 rounded-3xl shadow-lg border-2 border-blue-500 dark:border-blue-600 animate-in fade-in slide-in-from-bottom-4 relative scroll-mt-24">
+              <div id="checkout-section" className="bg-card p-6 md:p-8 rounded-3xl shadow-lg border-2 border-primary/50 dark:border-blue-600 animate-in fade-in slide-in-from-bottom-4 relative scroll-mt-24">
                 <button 
                     onClick={() => setShowDirectCheckout(false)} 
                     className="absolute top-4 right-4 p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors"
@@ -553,20 +553,20 @@ export default function ProductPage() {
                 
                 <div className="grid gap-4 mb-8">
                     <h3 className="font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-                        <IconMapPin size={18} className="text-blue-500" />
+                        <IconMapPin size={18} className="text-primary/90" />
                         Shipping Address
                     </h3>
                     {addresses.length > 0 ? (
                         <div className="space-y-3 max-h-60 overflow-y-auto custom-scrollbar pr-2">
                             {addresses.map((address) => (
-                                <label key={address.$id} className={`flex items-start gap-4 border p-4 rounded-2xl cursor-pointer transition-all ${selectedAddress === address.$id ? 'border-blue-500 bg-blue-50/50 dark:bg-blue-900/10 ring-1 ring-blue-500 shadow-sm' : 'hover:border-gray-300 bg-gray-50/30 dark:bg-gray-800/20'}`}>
+                                <label key={address.$id} className={`flex items-start gap-4 border p-4 rounded-2xl cursor-pointer transition-all ${selectedAddress === address.$id ? 'border-primary/50 bg-primary/5 dark:bg-primary/10 ring-1 ring-primary/50 shadow-sm' : 'hover:border-gray-300 bg-gray-50/30 dark:bg-gray-800/20'}`}>
                                     <input
                                         type="radio"
                                         name="address"
                                         value={address.$id}
                                         checked={selectedAddress === address.$id}
                                         onChange={(e) => setSelectedAddress(e.target.value)}
-                                        className="mt-1 w-4 h-4 text-blue-600"
+                                        className="mt-1 w-4 h-4 text-primary"
                                     />
                                     <div className="text-sm w-full">
                                         <p className="font-bold text-gray-900 dark:text-gray-100 text-base mb-1">{address.location}</p>
@@ -586,7 +586,7 @@ export default function ProductPage() {
                 <div className="grid gap-4 mb-8">
                     <h3 className="font-semibold text-gray-900 dark:text-white">Payment Method</h3>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        <label className={`flex flex-col items-center justify-center p-4 border rounded-xl cursor-pointer transition-all text-sm text-center ${paymentMethod === 'online' ? 'border-blue-500 bg-blue-50/50 dark:bg-blue-900/10 ring-1 ring-blue-500 shadow-sm' : 'hover:border-gray-300 bg-gray-50/50 dark:bg-gray-800/30'}`}>
+                        <label className={`flex flex-col items-center justify-center p-4 border rounded-xl cursor-pointer transition-all text-sm text-center ${paymentMethod === 'online' ? 'border-primary/50 bg-primary/5 dark:bg-primary/10 ring-1 ring-primary/50 shadow-sm' : 'hover:border-gray-300 bg-gray-50/50 dark:bg-gray-800/30'}`}>
                             <input 
                                 type="radio" 
                                 name="paymentMethod" 
@@ -598,7 +598,7 @@ export default function ProductPage() {
                             <span className="font-bold text-gray-900 dark:text-white">Online Pay</span>
                             <span className="text-xs text-gray-500 mt-1">(Cashfree)</span>
                         </label>
-                        <label className={`flex flex-col items-center justify-center p-4 border rounded-xl cursor-pointer transition-all text-sm text-center ${paymentMethod === 'cod' ? 'border-blue-500 bg-blue-50/50 dark:bg-blue-900/10 ring-1 ring-blue-500 shadow-sm' : 'hover:border-gray-300 bg-gray-50/50 dark:bg-gray-800/30'}`}>
+                        <label className={`flex flex-col items-center justify-center p-4 border rounded-xl cursor-pointer transition-all text-sm text-center ${paymentMethod === 'cod' ? 'border-primary/50 bg-primary/5 dark:bg-primary/10 ring-1 ring-primary/50 shadow-sm' : 'hover:border-gray-300 bg-gray-50/50 dark:bg-gray-800/30'}`}>
                             <input 
                                 type="radio" 
                                 name="paymentMethod" 
@@ -616,12 +616,12 @@ export default function ProductPage() {
                 <div className="border-t border-gray-100 dark:border-gray-800 pt-6">
                     <div className="flex justify-between items-center mb-6 bg-gray-50 dark:bg-gray-800/50 p-4 rounded-xl">
                         <span className="font-bold text-gray-900 dark:text-gray-100">Total Amount ({qty} items)</span>
-                        <span className="text-2xl font-black text-blue-600 dark:text-blue-400">₹{product.finalPrice * qty}</span>
+                        <span className="text-2xl font-black text-primary dark:text-primary/80">₹{product.finalPrice * qty}</span>
                     </div>
                     <button
                         onClick={handlePlaceOrder}
                         disabled={isProcessingOrder || addresses.length === 0}
-                        className="w-full py-4 bg-blue-600 text-white font-bold text-lg rounded-xl shadow-md hover:shadow-lg disabled:opacity-50 disabled:shadow-none cursor-pointer disabled:cursor-not-allowed active:scale-[0.98] transition-all flex justify-center items-center gap-2"
+                        className="w-full py-4 bg-primary text-white font-bold text-lg rounded-xl shadow-md hover:shadow-lg disabled:opacity-50 disabled:shadow-none cursor-pointer disabled:cursor-not-allowed active:scale-[0.98] transition-all flex justify-center items-center gap-2"
                     >
                         {isProcessingOrder ? (
                             <>
@@ -709,7 +709,7 @@ export default function ProductPage() {
                                     e.stopPropagation();
                                     addToCartRelated({ $id, productName, images, price, finalPrice, slug: relatedSlug });
                                 }}
-                                className="w-full bg-blue-600/90 hover:bg-blue-600 backdrop-blur-sm text-white font-medium py-2 rounded-lg flex items-center justify-center gap-2 shadow-lg active:scale-[0.98] transition-all"
+                                className="w-full bg-primary/90 hover:bg-primary backdrop-blur-sm text-white font-medium py-2 rounded-lg flex items-center justify-center gap-2 shadow-lg active:scale-[0.98] transition-all"
                             >
                                 <IconShoppingCart size={18} />
                                 <span className="text-sm">Add to Cart</span>
@@ -718,7 +718,7 @@ export default function ProductPage() {
                       </div>
                       
                       <div className="flex flex-col flex-1">
-                        <h3 className='font-semibold text-gray-900 dark:text-gray-100 line-clamp-2 text-sm leading-tight group-hover:text-blue-600 transition-colors mb-2'>{productName}</h3>
+                        <h3 className='font-semibold text-gray-900 dark:text-gray-100 line-clamp-2 text-sm leading-tight group-hover:text-primary transition-colors mb-2'>{productName}</h3>
                         <div className="mt-auto flex items-end justify-between">
                             <div className="flex flex-col">
                                 <span className="font-bold text-lg text-gray-900 dark:text-gray-100 leading-none">₹{finalPrice}</span>
@@ -731,7 +731,7 @@ export default function ProductPage() {
                                     e.stopPropagation();
                                     addToCartRelated({ $id, productName, images, price, finalPrice, slug: relatedSlug });
                                 }}
-                                className='sm:hidden p-2 bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400 rounded-full active:scale-95'
+                                className='sm:hidden p-2 bg-primary/10 text-primary dark:bg-primary/30 dark:text-primary/80 rounded-full active:scale-95'
                             >
                                 <IconShoppingCart size={18} />
                             </button>

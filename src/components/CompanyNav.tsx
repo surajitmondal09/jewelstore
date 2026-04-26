@@ -58,7 +58,7 @@ function CompanyNav() {
                                         onClick={() => setIsDropdownOpen(false)}
                                         className={`flex items-center gap-2 p-2 rounded-md text-sm transition-colors ${
                                             isActive 
-                                                ? "bg-green-500/10 text-green-600 dark:text-green-500 font-medium" 
+                                                ? "bg-primary/10 text-primary dark:text-primary/90 font-medium" 
                                                 : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"
                                         }`}
                                     >
@@ -83,7 +83,7 @@ function CompanyNav() {
                                 href={link.href} 
                                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm transition-colors ${
                                     isActive 
-                                        ? "bg-green-500/10 text-green-600 dark:text-green-500 font-medium" 
+                                        ? "bg-primary/10 text-primary dark:text-primary/90 font-medium" 
                                         : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"
                                 }`}
                             >

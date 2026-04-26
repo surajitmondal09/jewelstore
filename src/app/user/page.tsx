@@ -54,7 +54,7 @@ export default function ProfilePage() {
   if (isPageLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <IconLoader2 className="animate-spin text-green-600 size-10" />
+        <IconLoader2 className="animate-spin text-primary size-10" />
       </div>
     )
   }
@@ -63,12 +63,12 @@ export default function ProfilePage() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50/50 dark:bg-gray-900/50">
         <main className="max-w-md w-full mx-auto p-8 text-center bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700">
-          <div className="w-20 h-20 bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 rounded-full flex items-center justify-center mx-auto mb-6">
+          <div className="w-20 h-20 bg-primary/20 dark:bg-primary/30 text-primary dark:text-primary/80 rounded-full flex items-center justify-center mx-auto mb-6">
             <IconUser size={40} />
           </div>
           <h2 className="text-2xl font-bold mb-2 text-gray-900 dark:text-white">Access Denied</h2>
           <p className="text-gray-500 dark:text-gray-400 mb-8">Please log in to view and manage your profile</p>
-          <button onClick={() => router.push('/login')} className="w-full py-3 px-4 bg-green-600 hover:bg-green-700 text-white font-medium rounded-xl transition-colors shadow-md shadow-green-600/20 active:scale-[0.98]">
+          <button onClick={() => router.push('/login')} className="w-full py-3 px-4 bg-primary hover:bg-primary/90 text-white font-medium rounded-xl transition-colors shadow-md shadow-primary/20 active:scale-[0.98]">
             Sign In to Continue
           </button>
         </main>
@@ -261,11 +261,11 @@ export default function ProfilePage() {
               <div className="space-y-2.5">
                 <button 
                   onClick={() => router.push('/user/cart')} 
-                  className="w-full flex items-center justify-between p-3.5 rounded-xl text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700/50 hover:text-green-600 dark:hover:text-green-400 transition-colors group border border-transparent hover:border-gray-100 dark:hover:border-gray-600"
+                  className="w-full flex items-center justify-between p-3.5 rounded-xl text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700/50 hover:text-primary dark:hover:text-primary/80 transition-colors group border border-transparent hover:border-gray-100 dark:hover:border-gray-600"
                 >
                   <div className="flex items-center gap-3 font-medium">
-                    <div className="p-2 bg-gray-100 dark:bg-gray-900 rounded-lg group-hover:bg-green-100 dark:group-hover:bg-green-900/30 transition-colors">
-                      <IconShoppingBag size={18} className="text-gray-500 dark:text-gray-400 group-hover:text-green-600 dark:group-hover:text-green-400" />
+                    <div className="p-2 bg-gray-100 dark:bg-gray-900 rounded-lg group-hover:bg-primary/20 dark:group-hover:bg-primary/30 transition-colors">
+                      <IconShoppingBag size={18} className="text-gray-500 dark:text-gray-400 group-hover:text-primary dark:group-hover:text-primary/80" />
                     </div>
                     <span>My Cart</span>
                   </div>
@@ -291,7 +291,7 @@ export default function ProfilePage() {
             {/* Contact Info */}
             <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 sm:p-8 shadow-sm border border-gray-100 dark:border-gray-700/60">
               <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-5 flex items-center gap-2">
-                <IconAddressBook className="text-blue-500" /> Account Details
+                <IconAddressBook className="text-primary/90" /> Account Details
               </h3>
               
               <div className="bg-gray-50 dark:bg-gray-900/50 rounded-xl p-4 border border-gray-100 dark:border-gray-700/50">
@@ -302,14 +302,14 @@ export default function ProfilePage() {
                   </div>
                   <div>
                     {user.emailVerification ? (
-                      <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 text-sm font-medium border border-green-200 dark:border-green-800/30">
+                      <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary/10 dark:bg-primary/20 text-primary dark:text-primary/80 text-sm font-medium border border-primary/20 dark:border-primary/30">
                         <IconCircleCheck size={16} />
                         Verified
                       </span>
                     ) : (
                       <button 
                         onClick={hendelVerifyEmail} 
-                        className="inline-flex items-center gap-1.5 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors shadow-sm active:scale-95"
+                        className="inline-flex items-center gap-1.5 px-4 py-2 bg-primary hover:bg-primary/90 text-white text-sm font-medium rounded-lg transition-colors shadow-sm active:scale-95"
                       >
                         <IconMail size={16} />
                         Verify Email
@@ -325,14 +325,14 @@ export default function ProfilePage() {
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
                 <div>
                   <h3 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
-                    <IconMapPin className="text-green-500" /> Delivery Addresses
+                    <IconMapPin className="text-primary/90" /> Delivery Addresses
                   </h3>
                   <p className="text-sm text-gray-500 mt-1">Manage where your orders are delivered</p>
                 </div>
                 {!editingAddress && (
                   <button 
                     onClick={handleAddNewAddress} 
-                    className="inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 hover:bg-green-100 dark:hover:bg-green-900/40 text-sm font-medium rounded-lg transition-colors border border-green-200 dark:border-green-800/30"
+                    className="inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-primary/10 dark:bg-primary/20 text-primary dark:text-primary/80 hover:bg-primary/20 dark:hover:bg-primary/40 text-sm font-medium rounded-lg transition-colors border border-primary/20 dark:border-primary/30"
                   >
                     <IconPlus size={16} /> Add New
                   </button>
@@ -352,7 +352,7 @@ export default function ProfilePage() {
                         value={addressForm.location} 
                         onChange={(e) => setAddressForm({ ...addressForm, location: e.target.value })} 
                         placeholder="House No. 12, ABC Society, MG Road" 
-                        className="w-full px-4 py-2.5 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500/20 focus:border-green-500 outline-none transition-all text-gray-900 dark:text-gray-100" 
+                        className="w-full px-4 py-2.5 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary/50/20 focus:border-primary/50 outline-none transition-all text-gray-900 dark:text-gray-100" 
                       />
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -363,7 +363,7 @@ export default function ProfilePage() {
                           value={addressForm.city} 
                           onChange={(e) => setAddressForm({ ...addressForm, city: e.target.value })} 
                           placeholder="City" 
-                          className="w-full px-4 py-2.5 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500/20 focus:border-green-500 outline-none transition-all text-gray-900 dark:text-gray-100" 
+                          className="w-full px-4 py-2.5 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary/50/20 focus:border-primary/50 outline-none transition-all text-gray-900 dark:text-gray-100" 
                         />
                       </div>
                       <div>
@@ -373,7 +373,7 @@ export default function ProfilePage() {
                           value={addressForm.state} 
                           onChange={(e) => setAddressForm({ ...addressForm, state: e.target.value })} 
                           placeholder="State" 
-                          className="w-full px-4 py-2.5 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500/20 focus:border-green-500 outline-none transition-all text-gray-900 dark:text-gray-100" 
+                          className="w-full px-4 py-2.5 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary/50/20 focus:border-primary/50 outline-none transition-all text-gray-900 dark:text-gray-100" 
                         />
                       </div>
                     </div>
@@ -385,7 +385,7 @@ export default function ProfilePage() {
                           value={addressForm.pincode} 
                           onChange={(e) => setAddressForm({ ...addressForm, pincode: e.target.value })} 
                           placeholder="e.g. 100001" 
-                          className="w-full px-4 py-2.5 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500/20 focus:border-green-500 outline-none transition-all text-gray-900 dark:text-gray-100" 
+                          className="w-full px-4 py-2.5 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary/50/20 focus:border-primary/50 outline-none transition-all text-gray-900 dark:text-gray-100" 
                         />
                       </div>
                       <div>
@@ -395,7 +395,7 @@ export default function ProfilePage() {
                           value={addressForm.phone} 
                           onChange={(e) => setAddressForm({ ...addressForm, phone: e.target.value })} 
                           placeholder="Phone Number" 
-                          className="w-full px-4 py-2.5 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500/20 focus:border-green-500 outline-none transition-all text-gray-900 dark:text-gray-100" 
+                          className="w-full px-4 py-2.5 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary/50/20 focus:border-primary/50 outline-none transition-all text-gray-900 dark:text-gray-100" 
                         />
                       </div>
                     </div>
@@ -403,7 +403,7 @@ export default function ProfilePage() {
                       <button 
                         onClick={handleAddressSave} 
                         disabled={isLoading}
-                        className="px-6 py-2.5 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 transition-colors shadow-sm disabled:opacity-70 disabled:cursor-not-allowed flex items-center gap-2"
+                        className="px-6 py-2.5 bg-primary text-white font-medium rounded-lg hover:bg-primary/90 transition-colors shadow-sm disabled:opacity-70 disabled:cursor-not-allowed flex items-center gap-2"
                       >
                         {isLoading && <IconLoader2 size={18} className="animate-spin" />}
                         {isLoading ? 'Saving...' : 'Save Address'}
@@ -422,11 +422,11 @@ export default function ProfilePage() {
                 addresses.length > 0 ? (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {addresses.map((address) => (
-                      <div key={address.$id} className="relative group bg-white dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-xl p-5 hover:border-green-500/50 dark:hover:border-green-500/50 transition-colors shadow-sm">
+                      <div key={address.$id} className="relative group bg-white dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-xl p-5 hover:border-primary/50/50 dark:hover:border-primary/50/50 transition-colors shadow-sm">
                         <div className="absolute top-4 right-4 flex opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity gap-2">
                           <button 
                             onClick={() => handleEditAddress(address)} 
-                            className="p-1.5 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-md hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors"
+                            className="p-1.5 bg-primary/10 dark:bg-primary/30 text-primary dark:text-primary/80 rounded-md hover:bg-primary/20 dark:hover:bg-primary/50 transition-colors"
                             title="Edit"
                           >
                             <IconEdit size={16} />
@@ -462,7 +462,7 @@ export default function ProfilePage() {
                     <p className="text-gray-500 max-w-sm mx-auto mb-6">You haven't added any delivery addresses yet. Add one now to make checkout faster.</p>
                     <button 
                       onClick={handleAddNewAddress} 
-                      className="inline-flex items-center gap-2 px-5 py-2.5 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 transition-colors"
+                      className="inline-flex items-center gap-2 px-5 py-2.5 bg-primary text-white font-medium rounded-lg hover:bg-primary/90 transition-colors"
                     >
                       <IconPlus size={18} /> Add Your First Address
                     </button>
