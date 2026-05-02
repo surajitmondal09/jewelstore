@@ -56,7 +56,7 @@ export const useAuthStore = create<IAuthStore>()(
       jwt: null,
       user: null,
       hydrated: false,
-      theme: "dark",
+      theme: "light",
 
       darkTheme(){
         set({theme: "dark"})
