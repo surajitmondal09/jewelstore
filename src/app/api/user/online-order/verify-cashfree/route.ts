@@ -128,7 +128,7 @@ export async function POST(request: NextRequest) {
         try {
             await tablesDB.createRow(db, notificationTable, ID.unique(), {
                 userId: customerId,
-                notification: \`Payment Successful! Your order (#${onlineOrder.$id.slice(-6).toUpperCase()}) has been placed.\`
+                notification: `Payment Successful! Your order (#${onlineOrder.$id.slice(-6).toUpperCase()}) has been placed.`
             });
         } catch (notifConfErr) {
             console.error("Failed to create placement notification:", notifConfErr);
