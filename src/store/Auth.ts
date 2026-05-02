@@ -170,7 +170,7 @@ export const useAuthStore = create<IAuthStore>()(
     })),
     {
       name: "auth",
-      partialize: (state) => ({ session: state.session, user: state.user, theme: state.theme, hydrated: state.hydrated }),
+      partialize: (state) => ({ session: state.session, user: state.user, theme: state.theme, hydrated: state.hydrated, jwt: state.jwt }),
       onRehydrateStorage(){
         return (state, error) => {
           if (!error) state?.setHydrated()

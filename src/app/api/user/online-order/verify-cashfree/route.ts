@@ -1,7 +1,7 @@
 import { authenticateServer } from "@/lib/serverAuth";
 import { NextRequest, NextResponse } from "next/server";
 import { Cashfree, CFEnvironment } from "cashfree-pg";
-import { db, customerTable, onlineOrderTable, customerPaymentTable, itemTable, productTable, addressTable } from "@/models/name";
+import { db, customerTable, onlineOrderTable, customerPaymentTable, itemTable, productTable, addressTable, notificationTable } from "@/models/name";
 import { ID } from "node-appwrite";
 
 const cashfree = new Cashfree(
@@ -114,7 +114,8 @@ export async function POST(request: NextRequest) {
 
         const updateData: any = {
             orderHistory: currentOrderHistory,
-            paymentHistory: currentPaymentHistory
+            paymentHistory: currentPaymentHistory,
+            hasUnreadNotification: true
         };
 
         if (!isDirect) {
@@ -122,6 +123,16 @@ export async function POST(request: NextRequest) {
         }
 
         await tablesDB.updateRow(db, customerTable, customerId, updateData);
+
+        // Create a new notification
+        try {
+            await tablesDB.createRow(db, notificationTable, ID.unique(), {
+                userId: customerId,
+                notification: \`Payment Successful! Your order (#${onlineOrder.$id.slice(-6).toUpperCase()}) has been placed.\`
+            });
+        } catch (notifConfErr) {
+            console.error("Failed to create placement notification:", notifConfErr);
+        }
 
         return NextResponse.json({ success: true, order: onlineOrder });
     } catch (error: any) {
