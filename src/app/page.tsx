@@ -6,8 +6,9 @@
 import React, { useEffect, useState } from 'react'
 import Navbar from '../components/Navbar'
 import Footer from '@/components/Footer'
-import { IconArrowRight, IconTruck, IconClock, IconShieldCheck, IconLeaf, IconChevronLeft, IconChevronRight, IconHeart, IconShoppingCart } from '@tabler/icons-react'
+import { IconArrowRight, IconTruck, IconClock, IconShieldCheck, IconLeaf, IconChevronLeft, IconChevronRight, IconHeart, IconShoppingCart, IconStar, IconQuote, IconMessageCircle } from '@tabler/icons-react'
 import { useRouter } from 'next/navigation'
+import { motion } from 'framer-motion'
 import axios from "@/lib/axios";
 import { toast } from 'react-toastify'
 import { useAuthStore } from '@/store/Auth'
@@ -53,6 +54,11 @@ const ProductGridSkeleton = () => (
     </div>
   </div>
 );
+
+const fadeInUp = {
+  hidden: { opacity: 0, y: 30 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } }
+};
 
 export default function Page() {
   const router = useRouter()
@@ -256,7 +262,9 @@ export default function Page() {
         
         {/* Carousel Section */}
         {slidersLoading ? <CarouselSkeleton /> : (
-            <section className='relative w-full h-[20vh] sm:h-[30vh] md:h-[40vh] lg:h-[50vh] xl:h-[65vh] flex items-center justify-center overflow-hidden bg-gray-50 dark:bg-black'>
+            <motion.section 
+              initial={{opacity: 0}} animate={{opacity: 1}} transition={{duration: 0.8}}
+              className='relative w-full h-[20vh] sm:h-[30vh] md:h-[40vh] lg:h-[50vh] xl:h-[65vh] flex items-center justify-center overflow-hidden bg-gray-50 dark:bg-black'>
             <div 
               className='relative w-full h-full group touch-pan-y'
               onTouchStart={handleTouchStart}
@@ -316,12 +324,14 @@ export default function Page() {
                 </>
                 )}
             </div>
-            </section>
+            </motion.section>
         )}
 
         <div className="max-w-screen-2xl mx-auto">
             {/* Quick Categories */}
-            <section className='py-10 md:py-14 px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16'>
+            <motion.section 
+              initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-50px" }} variants={fadeInUp}
+              className='py-10 md:py-14 px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16'>
                 <div className="flex justify-between items-end mb-6">
                     <h2 className='text-2xl md:text-3xl font-extrabold tracking-tight text-gray-900 dark:text-white'>Shop by Category</h2>
                 </div>
@@ -346,7 +356,7 @@ export default function Page() {
                     ))}
                     </div>
                 )}
-            </section>
+            </motion.section>
 
             {/* Recommended Products */}
             {featuredProductSectionsLoading || productsLoading ? (
@@ -356,7 +366,9 @@ export default function Page() {
                 if (sectionProducts.length === 0) return null;
 
                 return (
-                <section key={section.$id} className='py-8 md:py-12 px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 border-t border-gray-100 dark:border-gray-800/50'>
+                <motion.section 
+                  initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-50px" }} variants={fadeInUp}
+                  key={section.$id} className='py-8 md:py-12 px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 border-t border-gray-100 dark:border-gray-800/50'>
                     <div className='flex justify-between items-end mb-8'>
                         <div>
                             <h2 className='text-2xl md:text-3xl font-extrabold tracking-tight text-gray-900 dark:text-white'>{section.title}</h2>
@@ -448,10 +460,88 @@ export default function Page() {
                         );
                     })}
                     </div>
-                </section>
+                </motion.section>
                 );
             })}
         </div>
+
+        {/* Non-logged in User Features */}
+        {!user && (
+            <div className="max-w-screen-2xl mx-auto space-y-16 py-16 px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16">
+                {/* Why Trust Us */}
+                <motion.section initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-50px" }} variants={fadeInUp}>
+                    <div className="text-center mb-10">
+                        <h2 className="text-2xl md:text-3xl font-extrabold tracking-tight text-gray-900 dark:text-white">Why Choose JewelStore?</h2>
+                        <p className="mt-4 text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">We pride ourselves on delivering exceptional quality, certified authenticity, and a seamless shopping experience for every customer.</p>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        <div className="flex flex-col items-center text-center p-6 bg-gray-50 dark:bg-gray-800/30 rounded-2xl">
+                            <div className="w-16 h-16 bg-primary/10 text-primary rounded-full flex items-center justify-center mb-4">
+                                <IconShieldCheck size={32} />
+                            </div>
+                            <h3 className="text-xl font-bold mb-2">Certified Authenticity</h3>
+                            <p className="text-gray-600 dark:text-gray-400">Every piece comes with a certificate of authenticity guaranteeing the purity of materials.</p>
+                        </div>
+                        <div className="flex flex-col items-center text-center p-6 bg-gray-50 dark:bg-gray-800/30 rounded-2xl">
+                            <div className="w-16 h-16 bg-primary/10 text-primary rounded-full flex items-center justify-center mb-4">
+                                <IconTruck size={32} />
+                            </div>
+                            <h3 className="text-xl font-bold mb-2">Secure & Free Shipping</h3>
+                            <p className="text-gray-600 dark:text-gray-400">Enjoy fully insured, fast, and free delivery on all orders, safely to your doorstep.</p>
+                        </div>
+                        <div className="flex flex-col items-center text-center p-6 bg-gray-50 dark:bg-gray-800/30 rounded-2xl">
+                            <div className="w-16 h-16 bg-primary/10 text-primary rounded-full flex items-center justify-center mb-4">
+                                <IconLeaf size={32} />
+                            </div>
+                            <h3 className="text-xl font-bold mb-2">Ethically Sourced</h3>
+                            <p className="text-gray-600 dark:text-gray-400">Our diamonds and precious stones are 100% conflict-free and ethically sourced.</p>
+                        </div>
+                    </div>
+                </motion.section>
+
+                {/* User Testimonials */}
+                <motion.section initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-50px" }} variants={fadeInUp}>
+                    <div className="text-center mb-10">
+                        <h2 className="text-2xl md:text-3xl font-extrabold tracking-tight text-gray-900 dark:text-white">What Our Customers Say</h2>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        {[
+                            { name: "Priya S.", review: "Absolutely stunning jewelry! The craftsmanship is incredible, and the customer service was extremely helpful in picking the perfect ring.", rating: 5 },
+                            { name: "Rahul M.", review: "Bought a necklace for my wife's anniversary. She loved it. The delivery was fast and the packaging felt very premium.", rating: 5 },
+                            { name: "Anjali K.", review: "I trust JewelStore for all my festive jewelry needs. The purity and designs are unmatched. Highly recommended!", rating: 4 },
+                        ].map((testimonial, i) => (
+                            <div key={i} className="p-6 bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl shadow-sm hover:shadow-md transition-shadow relative">
+                                <IconQuote size={40} className="absolute top-4 right-4 text-gray-100 dark:text-gray-800" />
+                                <div className="flex text-yellow-400 mb-4">
+                                    {[...Array(5)].map((_, j) => (
+                                        <IconStar key={j} size={18} fill={j < testimonial.rating ? "currentColor" : "none"} className={j >= testimonial.rating ? "text-gray-300" : ""} />
+                                    ))}
+                                </div>
+                                <p className="text-gray-600 dark:text-gray-400 italic mb-4">"{testimonial.review}"</p>
+                                <p className="font-bold text-gray-900 dark:text-white">- {testimonial.name}</p>
+                            </div>
+                        ))}
+                    </div>
+                </motion.section>
+
+                {/* Quick Contact Section */}
+                <motion.section 
+                    initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-50px" }} variants={fadeInUp}
+                    className="bg-primary/5 dark:bg-primary/10 rounded-3xl p-8 md:p-12 text-center flex flex-col items-center">
+                    <div className="w-20 h-20 bg-primary/20 text-primary rounded-full flex items-center justify-center mb-6">
+                        <IconMessageCircle size={40} />
+                    </div>
+                    <h2 className="text-2xl md:text-3xl font-extrabold tracking-tight text-gray-900 dark:text-white mb-4">Need Help Choosing?</h2>
+                    <p className="text-gray-600 dark:text-gray-400 max-w-lg mb-8 text-lg">Our expert jewelry consultants are here to guide you to find the perfect piece for any occasion.</p>
+                    <button
+                        onClick={() => router.push('/contact')}
+                        className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-3 rounded-full font-bold text-lg shadow-lg hover:shadow-xl transition-all active:scale-95 flex items-center gap-2"
+                    >
+                        Contact Us Today <IconArrowRight size={20} />
+                    </button>
+                </motion.section>
+            </div>
+        )}
       </main>
 
       <Footer />
