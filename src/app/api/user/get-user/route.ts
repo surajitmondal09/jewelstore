@@ -2,6 +2,7 @@ import { db, customerTable} from "@/models/name";
 import { authenticateServer } from "@/lib/serverAuth";
 import { NextRequest, NextResponse } from "next/server";
 
+export const dynamic = 'force-dynamic';
 
 export async function POST(request: NextRequest) {
     try {

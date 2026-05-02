@@ -23,6 +23,10 @@ const nextConfig: NextConfig = {
         port: '',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'fakestoreapi.com',
+      },
     ],
   }
 };

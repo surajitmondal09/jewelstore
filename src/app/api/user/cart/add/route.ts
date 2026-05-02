@@ -3,6 +3,9 @@ import { db, customerTable, itemTable } from "@/models/name";
 import { NextRequest, NextResponse } from "next/server";
 import { ID } from "appwrite";
 
+export const dynamic = 'force-dynamic';
+
+
 export async function POST(req: NextRequest) {
   try {
         const auth = await authenticateServer(req);

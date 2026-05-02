@@ -8,6 +8,7 @@ import { toast } from 'react-toastify'
 import { useDataStore } from '@/store/Data'
 import Image from 'next/image';
 import { account } from '@/models/client/config'
+import axios from '@/lib/axios'
 
 
 export default function ProfilePage() {
@@ -39,8 +40,8 @@ export default function ProfilePage() {
 
   const fetchAddresses = async () => {
     try {
-      const response = await fetch(`/api/user/address?customerId=${userData.$id}`);
-      const data = await response.json();
+      const response = await axios.get(`/api/user/address?customerId=${userData.$id}`);
+      const data = response.data;
       if (data) {
         setAddresses(data);
       }
@@ -102,18 +103,9 @@ export default function ProfilePage() {
     if (selectedAddress) {
       // Update address
       try {
-        const response = await fetch('/api/user/address', {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            documentId: selectedAddress.$id,
-            ...addressForm
-          })
-        });
-        const data = await response.json();
-        if (response.ok) {
+        const response = await axios.put('/api/user/address', { documentId: selectedAddress.$id, ...addressForm });
+        const data = response.data;
+        if (response.status === 200) {
           await fetchAddresses();
           setEditingAddress(false);
           setSelectedAddress(null)
@@ -129,18 +121,9 @@ export default function ProfilePage() {
     } else {
       // Add new address
       try {
-        const response = await fetch('/api/user/address', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            customerId: userData.$id,
-            ...addressForm
-          })
-        });
-        const data = await response.json();
-        if (response.ok) {
+        const response = await axios.post('/api/user/address', { customerId: userData.$id, ...addressForm });
+        const data = response.data;
+        if (response.status === 200) {
           await fetchAddresses();
           setEditingAddress(false);
           toast.success('Address added successfully');
@@ -182,17 +165,9 @@ export default function ProfilePage() {
   const handleDeleteAddress = async (addressId: string) => {
     if (window.confirm("Are you sure you want to delete this address?")) {
       try {
-        const response = await fetch('/api/user/address', {
-          method: 'DELETE',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            documentId: addressId
-          })
-        });
-        const data = await response.json();
-        if (response.ok) {
+        const response = await axios.delete('/api/user/address', { data: { documentId: addressId } });
+        const data = response.data;
+        if (response.status === 200) {
           fetchAddresses();
           toast.success('Address deleted successfully');
         } else {

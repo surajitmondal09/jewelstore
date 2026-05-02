@@ -13,8 +13,8 @@ export default async function createItemTable(){
     
     await Promise.all([
         tablesDB.createStringColumn(db, itemTable, "productId", 100, true),
-        tablesDB.createStringColumn(db, itemTable, "productName", 10000, true),
-        tablesDB.createStringColumn(db, itemTable, "slug", 10000, true),
+        tablesDB.createStringColumn(db, itemTable, "productName", 1000, true),
+        tablesDB.createStringColumn(db, itemTable, "slug", 1000, true),
         tablesDB.createIntegerColumn(db, itemTable, "quantity", true, 1),
         tablesDB.createFloatColumn(db, itemTable, "price", true, 0.00),
     ])

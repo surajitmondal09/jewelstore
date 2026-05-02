@@ -62,8 +62,8 @@ export default function CartPage() {
 				}
 
 				// fetch addresses
-				const addressResponse = await fetch(`/api/user/address?customerId=${userData.$id}`);
-				const addressData = await addressResponse.json();
+				const addressResponse = await axios.get(`/api/user/address?customerId=${userData.$id}`);
+				const addressData = addressResponse.data;
 				if (addressData) {
 					setAddresses(addressData);
 					if (addressData.length > 0) {
@@ -383,7 +383,7 @@ export default function CartPage() {
 									</div>
 								) : (
 									<div className="text-sm p-4 bg-yellow-50 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-200 rounded-xl border border-yellow-200 dark:border-yellow-900/50">
-										No addresses found. <a href="/user/address" className="font-bold underline hover:text-yellow-900 dark:hover:text-yellow-100">Add one in your profile</a>.
+										No addresses found. <a href="/user/" className="font-bold underline hover:text-yellow-900 dark:hover:text-yellow-100">Add one in your profile</a>.
 									</div>
 								)}
 							</div>
