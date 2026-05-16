@@ -31,13 +31,13 @@ export async function POST(request: NextRequest) {
       console.warn('Failed to delete item', err);
     }
 
-    const cartArray = Array.isArray(customer.cartId) ? customer.cartId.filter((id: string) => id !== itemID) : [];
+    const cartArray = Array.isArray(customer.cartId) ? customer.cartId.map((id: any) => typeof id === 'string' ? id : id.$id).filter((id: string) => id !== itemID) : [];
 
     await tablesDB.updateRow(db, customerTable, customerID, { cartId: cartArray });
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error(error);
-    return NextResponse.json({ error }, { status: 500 });
+    console.error("Cart remove error:", error);
+    return NextResponse.json({ error: "Failed to remove from cart" }, { status: 500 });
   }
 }

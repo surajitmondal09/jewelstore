@@ -12,6 +12,7 @@ import { toast } from 'react-toastify'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useAuthStore } from '@/store/Auth'
 import { useDataStore } from '@/store/Data'
+import { useLocalStore } from '@/store/LocalStore'
 
 export const dynamic = 'force-dynamic'
 
@@ -52,10 +53,11 @@ const CategoriesSkeleton = () => (
 
 // Product List Component
 function ProductList({ productsPromise, productSearch, router, userData, user, onAddToCart, onToggleLiked }: { productsPromise: Promise<any>, productSearch: string, router: any, userData: any, user: any, onAddToCart: (product: any) => void, onToggleLiked: (product: any) => void }) {
+    const { localLiked } = useLocalStore();
     const productsData = use(productsPromise);
     const products = productsData.data;
 
-    const filteredProducts = products.rows?.filter((p: any) =>
+    const filteredProducts = (products.documents || products.rows || [])?.filter((p: any) =>
       p.productName.toLowerCase().includes(productSearch.toLowerCase())
     ) || [];
 
@@ -76,7 +78,7 @@ function ProductList({ productsPromise, productSearch, router, userData, user, o
         {
           filteredProducts?.map(({$id, slug, productName, images, price, finalPrice}: any)=>{
             const product = { $id, slug, productName, images, price, finalPrice };
-            const likedList = userData?.likedProducts || [];
+            const likedList = user ? (userData?.likedProducts || []) : localLiked;
             const isLiked = likedList.includes($id);
             const discount = price > finalPrice ? Math.round(((price - finalPrice) / price) * 100) : 0;
 
@@ -304,6 +306,7 @@ function CategoryList({
 function ShopContent() {
   const { user } = useAuthStore();
   const { userData, setUserData } = useDataStore();
+  const { addToLocalCart, toggleLocalLiked } = useLocalStore();
 
   const searchParams = useSearchParams();
   const categoryParam = searchParams.get('category');
@@ -369,8 +372,16 @@ function ShopContent() {
   }
 
   const addToCart = async (product: any) => {
-    if (!user || !userData) {
-      toast.error("Please login to add items to cart");
+    if (!user) {
+      addToLocalCart({
+        productID: product.$id,
+        productName: product.productName,
+        slug: product.slug,
+        qty: 1,
+        price: product.finalPrice,
+        images: product.images
+      });
+      toast.success("Added to cart!");
       return;
     }
     
@@ -397,8 +408,9 @@ function ShopContent() {
   };
 
   const toggleLiked = async (product: any) => {
-    if (!user || !userData) {
-      toast.error("Please login to add to wishlist");
+    if (!user) {
+      toggleLocalLiked(product.$id);
+      toast.success("Wishlist updated!");
       return;
     }
 

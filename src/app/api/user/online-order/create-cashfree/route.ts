@@ -1,4 +1,5 @@
 import { authenticateServer } from "@/lib/serverAuth";
+import { tablesDB as adminTablesDB } from "@/models/server/config";
 import { NextRequest, NextResponse } from "next/server";
 import { Cashfree, CFEnvironment } from "cashfree-pg";
 import { db, customerTable, itemTable, productTable } from "@/models/name";
@@ -10,23 +11,30 @@ const cashfree = new Cashfree(
 
 export async function POST(request: NextRequest) {
     try {
-        const auth = await authenticateServer(request);
-        if (!auth) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-        const tablesDB = auth.dbClient;
+        const { customerId, phone, name, email, isDirect, itemId, isGuest } = await request.json();
 
-        const { customerId, phone, name, email, isDirect, itemId } = await request.json();
+        let tablesDBToUse = null;
+        if (isGuest) {
+            tablesDBToUse = adminTablesDB;
+        } else {
+            const auth = await authenticateServer(request);
+            if (!auth) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+            tablesDBToUse = auth.dbClient;
+        }
 
-        if (!customerId) {
+        if (!isGuest && !customerId) {
             return NextResponse.json({ error: "Customer ID is required" }, { status: 400 });
         }
 
-        // Calculate total amount server-side to prevent price tampering
-        const customer = await tablesDB.getRow(db, customerTable, customerId);
-        if (!customer) {
-            return NextResponse.json({ error: "Customer not found" }, { status: 400 });
-        }
+        let itemsToCalculate = itemId;
 
-        const itemsToCalculate = isDirect ? itemId : customer.cartId;
+        if (!isGuest && !isDirect) {
+            const customer = await tablesDBToUse.getRow(db, customerTable, customerId);
+            if (!customer) {
+                return NextResponse.json({ error: "Customer not found" }, { status: 400 });
+            }
+            itemsToCalculate = customer.cartId;
+        }
 
         if (!itemsToCalculate || itemsToCalculate.length === 0) {
             return NextResponse.json({ error: "No items to checkout" }, { status: 400 });
@@ -35,16 +43,16 @@ export async function POST(request: NextRequest) {
         let serverTotalAmount = 0;
         for (const id of itemsToCalculate) {
             try {
-                const item = await tablesDB.getRow(db, itemTable, id);
+                const item = await tablesDBToUse.getRow(db, itemTable, id);
                 if (!item) {
                     return NextResponse.json({ error: "Cart item not found" }, { status: 400 });
                 }
                 if (item && item.productId) {
-                    const product = await tablesDB.getRow(db, productTable, item.productId);
+                    const product = await tablesDBToUse.getRow(db, productTable, item.productId);
                     if (product && typeof product.finalPrice === 'number') {
                         serverTotalAmount += product.finalPrice * item.quantity;
                         // Sync the snapshot item with the latest price to ensure verification uses the current live price
-                        await tablesDB.updateRow(db, itemTable, id, { 
+                        await tablesDBToUse.updateRow(db, itemTable, id, { 
                             price: product.finalPrice,
                             productName: product.productName
                         });
@@ -63,14 +71,14 @@ export async function POST(request: NextRequest) {
         }
 
         // Unique order ID for cashfree
-        const cashfreeOrderId = `order_${Date.now()}_${customerId.substring(0, 5)}`;
+        const cashfreeOrderId = isGuest ? `guest_order_${Date.now()}` : `order_${Date.now()}_${customerId.substring(0, 5)}`;
 
         const requestObj = {
             order_amount: serverTotalAmount,
             order_currency: "INR",
             order_id: cashfreeOrderId,
             customer_details: {
-                customer_id: customerId,
+                customer_id: isGuest ? `guest_${Date.now()}` : customerId,
                 customer_phone: phone || "9999999999",
                 customer_name: name || "Customer",
                 customer_email: email || "customer@example.com"
@@ -84,7 +92,8 @@ export async function POST(request: NextRequest) {
         
         return NextResponse.json(response.data);
     } catch (error: any) {
+        const errorMessage = error.response?.data?.message || error.message || "Failed to create payment session";
         console.error("Cashfree order creation error:", error.response?.data || error.message);
-        return NextResponse.json({ error: "Failed to create payment session" }, { status: 500 });
+        return NextResponse.json({ error: errorMessage }, { status: 500 });
     }
 }

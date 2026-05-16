@@ -9,6 +9,7 @@ import { toast } from 'react-toastify'
 import axios from "@/lib/axios";
 import { useAuthStore } from '@/store/Auth'
 import { useDataStore } from "@/store/Data"
+import { useLocalStore } from "@/store/LocalStore"
 import Loading from './loading' // Use the skeleton component
 
 type LikedItem = {
@@ -24,24 +25,29 @@ const LikedProducts = () => {
   const router = useRouter()
   const { user } = useAuthStore()
   const { userData, setUserData } = useDataStore()
+  const { localLiked, toggleLocalLiked, addToLocalCart } = useLocalStore()
   const [items, setItems] = useState<LikedItem[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     loadLiked()
-  }, [user, userData])
+  }, [user, userData, localLiked])
 
   const loadLiked = async () => {
     setLoading(true)
     try {
       if (user && userData && Array.isArray(userData.likedProducts) && userData.likedProducts.length > 0) {
         const resp = await axios.get<any>('/api/company/product')
-        const all = resp?.data?.rows || []
+        const all = resp?.data?.documents || resp?.data?.rows || []
         const liked = all.filter((p: any) => userData.likedProducts.includes(p.$id))
         setItems(liked)
+      } else if (!user && localLiked.length > 0) {
+        const resp = await axios.get<any>('/api/company/product')
+        const all = resp?.data?.documents || resp?.data?.rows || []
+        const liked = all.filter((p: any) => localLiked.includes(p.$id))
+        setItems(liked)
       } else {
-        const raw = localStorage.getItem('liked')
-        setItems(raw ? JSON.parse(raw) : [])
+        setItems([])
       }
     } catch (e) {
       console.error('Failed to load liked', e)
@@ -61,10 +67,8 @@ const LikedProducts = () => {
         setItems((prev) => prev.filter((p) => p.$id !== id))
         toast.success('Removed from wishlist')
       } else {
-        const raw = localStorage.getItem('liked')
-        const updated = (raw ? JSON.parse(raw) : []).filter((p: any) => p.$id !== id)
-        localStorage.setItem('liked', JSON.stringify(updated))
-        setItems(updated)
+        toggleLocalLiked(id);
+        setItems((prev) => prev.filter((p) => p.$id !== id))
         toast.info('Removed from wishlist')
       }
     } catch (err) {
@@ -74,6 +78,19 @@ const LikedProducts = () => {
   }
 
   const addToCart = (item: LikedItem) => {
+    if (!user) {
+      addToLocalCart({
+        productID: item.$id,
+        productName: item.productName,
+        slug: item.slug,
+        price: item.finalPrice,
+        qty: 1,
+        images: item.images
+      });
+      toast.success("Product added to cart");
+      return;
+    }
+
     if (!userData) {
       toast.error('Please login to add items to cart')
       return

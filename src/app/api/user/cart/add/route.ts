@@ -23,8 +23,10 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: false, message: "Customer not found" }, { status: 404 });
     }
 
-    if (customer.cartId && customer.cartId.length > 0) {
-      const promises = customer.cartId.map((id: string) => tablesDB.getRow(db, itemTable, id).catch(() => null));
+    const cartIdStrs = (customer.cartId || []).map((id: any) => typeof id === 'string' ? id : id.$id).filter(Boolean);
+
+    if (cartIdStrs.length > 0) {
+      const promises = cartIdStrs.map((id: string) => tablesDB.getRow(db, itemTable, id).catch(() => null));
       const cartItems = await Promise.all(promises);
       
       const existingItem = cartItems.find((item: any) => item && item.productId === productID);
@@ -45,11 +47,12 @@ export async function POST(req: NextRequest) {
       price,
     });
 
-    const updatedCart = customer.cartId ? [...customer.cartId, item.$id] : [item.$id];
+    const updatedCart = [...cartIdStrs, item.$id];
     await tablesDB.updateRow(db, customerTable, customerID, { cartId: updatedCart });
 
     return NextResponse.json({ success: true, message: "Item added to cart" });
   } catch (error) {
+    console.error("Failed to add item to cart:", error);
     return NextResponse.json({ success: false, message: "Failed to add item to cart" }, { status: 500 });
   }
 }

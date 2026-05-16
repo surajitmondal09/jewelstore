@@ -40,7 +40,7 @@ export default function ProfilePage() {
 
   const fetchAddresses = async () => {
     try {
-      const response = await axios.get(`/api/user/address?customerId=${userData.$id}`);
+      const response = await axios.get<any>(`/api/user/address?customerId=${userData.$id}`);
       const data = response.data;
       if (data) {
         setAddresses(data);
@@ -103,7 +103,7 @@ export default function ProfilePage() {
     if (selectedAddress) {
       // Update address
       try {
-        const response = await axios.put('/api/user/address', { documentId: selectedAddress.$id, ...addressForm });
+        const response = await axios.put<any>('/api/user/address', { documentId: selectedAddress.$id, ...addressForm });
         const data = response.data;
         if (response.status === 200) {
           await fetchAddresses();
@@ -121,7 +121,7 @@ export default function ProfilePage() {
     } else {
       // Add new address
       try {
-        const response = await axios.post('/api/user/address', { customerId: userData.$id, ...addressForm });
+        const response = await axios.post<any>('/api/user/address', { customerId: userData.$id, ...addressForm });
         const data = response.data;
         if (response.status === 200) {
           await fetchAddresses();
@@ -165,7 +165,7 @@ export default function ProfilePage() {
   const handleDeleteAddress = async (addressId: string) => {
     if (window.confirm("Are you sure you want to delete this address?")) {
       try {
-        const response = await axios.delete('/api/user/address', { data: { documentId: addressId } });
+        const response = await axios.delete<any>('/api/user/address', { data: { documentId: addressId } } as any);
         const data = response.data;
         if (response.status === 200) {
           fetchAddresses();

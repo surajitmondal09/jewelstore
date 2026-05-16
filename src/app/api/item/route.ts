@@ -1,17 +1,24 @@
 import { db, itemTable } from "@/models/name";
 import { authenticateServer } from "@/lib/serverAuth";
+import { tablesDB as adminTablesDB } from "@/models/server/config";
 import { NextResponse, NextRequest } from "next/server";
 import { ID } from "node-appwrite";
 
 export async function POST(request: NextRequest) {
     try {
-        const auth = await authenticateServer(request);
-        if (!auth) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-        const tablesDB = auth.dbClient;
-
         const data = await request.json();
-        const { productId, productName, quantity, price, slug } = data;
-        const response = await tablesDB.createRow(db, itemTable, ID.unique(), {
+        const { productId, productName, quantity, price, slug, isGuest } = data;
+        
+        let tablesDBToUse = null;
+        if (isGuest) {
+            tablesDBToUse = adminTablesDB;
+        } else {
+            const auth = await authenticateServer(request);
+            if (!auth) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+            tablesDBToUse = auth.dbClient;
+        }
+
+        const response = await tablesDBToUse.createRow(db, itemTable, ID.unique(), {
             productId,
             productName,
             quantity,

@@ -68,7 +68,7 @@ export default function Register() {
                   name: fullname,
                   width: 100,
                   height: 100,
-                  background: "148F24",
+                  background: "CFA576",
                 })
                 console.log(avatar);;
                 

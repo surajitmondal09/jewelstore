@@ -4,8 +4,10 @@
 import React, { useEffect, useState } from "react";
 import axios from "@/lib/axios";
 import { useDataStore } from "@/store/Data";
+import { useAuthStore } from "@/store/Auth";
+import { useLocalStore } from "@/store/LocalStore";
 import { toast } from "react-toastify";
-import { IconMinus, IconPlus, IconMapPin, IconTrash, IconShoppingCartOff } from "@tabler/icons-react";
+import { IconMinus, IconPlus, IconMapPin, IconTrash, IconShoppingCartOff, IconUser } from "@tabler/icons-react";
 import { useRouter } from "next/navigation";
 // @ts-expect-error: no types available for cashfree
 import { load } from "@cashfreepayments/cashfree-js";
@@ -19,13 +21,24 @@ type CartItem = {
 };
 
 export default function CartPage() {
+	const { user } = useAuthStore();
 	const { userData, setUserData } = useDataStore();
+	const { localCart, updateLocalCartQty, removeFromLocalCart, clearLocalCart } = useLocalStore();
+	
 	const [items, setItems] = useState<CartItem[]>([]);
 	const [productMap, setProductMap] = useState<Record<string, any>>({});
 	const [loading, setLoading] = useState(false);
 	const [isOrdering, setIsOrdering] = useState(false);
+	
+	// User Addresses
 	const [addresses, setAddresses] = useState<any[]>([]);
 	const [selectedAddress, setSelectedAddress] = useState<string | null>(null);
+	
+	// Guest Checkout Details
+	const [guestDetails, setGuestDetails] = useState({
+		name: "", email: "", phone: "", address: "", city: "", state: "", pincode: ""
+	});
+
 	const [paymentMethod, setPaymentMethod] = useState<"cod" | "online">("online");
 	const [cashfree, setCashfree] = useState<any>(null);
 	const router = useRouter();
@@ -36,51 +49,75 @@ export default function CartPage() {
 
 	useEffect(() => {
 		const fetchItemsAndAddresses = async () => {
-			if (!userData?.$id) return;
 			setLoading(true);
 			try {
-				// fetch cart items
-				if (userData.cartId && userData.cartId.length > 0) {
-					const promises = userData.cartId.map((id: string) => axios.get<any>(`/api/item?id=${id}`));
-					const responses = await Promise.all(promises);
-					const fetched: CartItem[] = responses.map((r) => r.data);
-					setItems(fetched);
+				if (user && userData?.$id) {
+					// fetch logged in user cart items
+					if (userData.cartId && userData.cartId.length > 0) {
+						const promises = userData.cartId.map((id: string) => axios.get<any>(`/api/item?id=${id}`));
+						const responses = await Promise.all(promises);
+						const fetched: CartItem[] = responses.map((r) => r.data);
+						setItems(fetched);
 
-					// fetch product details for images / links
-					const uniqueProductIds = Array.from(new Set(fetched.map((f) => f.productId)));
-					const prodPromises = uniqueProductIds.map((pid) => axios.post<any>('/api/company/product/get-product', { id: pid }));
-					const prodResponses = await Promise.allSettled(prodPromises);
-					const map: Record<string, any> = {};
-					prodResponses.forEach((res, idx) => {
-						if (res.status === 'fulfilled') {
-							map[uniqueProductIds[idx]] = res.value.data;
+						const uniqueProductIds = Array.from(new Set(fetched.map((f) => f.productId)));
+						const prodPromises = uniqueProductIds.map((pid) => axios.post<any>('/api/company/product/get-product', { id: pid }));
+						const prodResponses = await Promise.allSettled(prodPromises);
+						const map: Record<string, any> = {};
+						prodResponses.forEach((res, idx) => {
+							if (res.status === 'fulfilled') {
+								map[uniqueProductIds[idx]] = res.value.data;
+							}
+						});
+						setProductMap(map);
+					} else {
+						setItems([]);
+					}
+
+					// fetch logged in user addresses
+					const addressResponse = await axios.get<any>(`/api/user/address?customerId=${userData.$id}`);
+					const addressData = addressResponse.data;
+					if (addressData) {
+						setAddresses(addressData);
+						if (addressData.length > 0) {
+							setSelectedAddress(addressData[0].$id);
 						}
-					});
-					setProductMap(map);
-				} else {
-					setItems([]);
-				}
+					}
+				} else if (!user) {
+					// Populate from localCart
+					if (localCart.length > 0) {
+						const fetched: CartItem[] = localCart.map(lc => ({
+							$id: lc.productID, // Use productID as pseudo $id
+							productId: lc.productID,
+							productName: lc.productName,
+							quantity: lc.qty,
+							price: lc.price
+						}));
+						setItems(fetched);
 
-				// fetch addresses
-				const addressResponse = await axios.get(`/api/user/address?customerId=${userData.$id}`);
-				const addressData = addressResponse.data;
-				if (addressData) {
-					setAddresses(addressData);
-					if (addressData.length > 0) {
-						setSelectedAddress(addressData[0].$id);
+						const map: Record<string, any> = {};
+						localCart.forEach(lc => {
+							map[lc.productID] = {
+								productName: lc.productName,
+								finalPrice: lc.price,
+								images: lc.images,
+								slug: lc.slug
+							};
+						});
+						setProductMap(map);
+					} else {
+						setItems([]);
 					}
 				}
-
 			} catch (err) {
 				console.error(err);
-				toast.error("Failed to load cart items or addresses");
+				toast.error("Failed to load cart items");
 			} finally {
 				setLoading(false);
 			}
 		};
 
 		fetchItemsAndAddresses();
-	}, [userData]);
+	}, [userData, user, localCart]);
 
 
 	const subtotal = items.reduce((s, it) => {
@@ -91,22 +128,27 @@ export default function CartPage() {
 
 	const hasUnavailableItems = items.some(it => !productMap[it.productId] || productMap[it.productId].error);
 
-	const verifyPayment = async (orderId: string) => {
+	const verifyPayment = async (orderId: string, itemIdsStr: string[]) => {
 		try {
-			const itemIds = userData.cartId || items.map((i) => i.$id);
+			const customerId = user ? userData.$id : "guest";
 			const res = await axios.post<any>("/api/user/online-order/verify-cashfree", {
 				orderId,
-				customerId: userData.$id,
-				addressID: selectedAddress,
-				itemId: itemIds,
+				customerId,
+				addressID: selectedAddress, // Could be null for guest if API accepts it, or we send guest details
+				itemId: itemIdsStr,
 				totalAmount: subtotal,
-				shipping_charge: 0.0
+				shipping_charge: 0.0,
+				isGuest: !user,
+				guestEmail: !user ? guestDetails.email : undefined,
+				guestDetails: !user ? guestDetails : undefined
 			});
 
 			if (res.data?.success) {
 				toast.success("Order placed successfully");
-				if (setUserData && userData.$id) {
+				if (user && setUserData && userData.$id) {
 					await setUserData(userData.$id);
+				} else {
+					clearLocalCart();
 				}
 				setItems([]);
 			} else {
@@ -121,20 +163,44 @@ export default function CartPage() {
 	}
 
 	const handleCreateOrder = async () => {
-		if (!userData || !userData.$id) {
-			toast.error("No customer data available");
-			return;
-		}
 		if (items.length === 0) {
 			toast.error("Cart is empty");
 			return;
 		}
-		if (!selectedAddress) {
+		if (user && !selectedAddress) {
 			toast.error("Please select a shipping address");
+			return;
+		}
+		if (!user && (!guestDetails.name || !guestDetails.email || !guestDetails.phone || !guestDetails.address || !guestDetails.city || !guestDetails.state || !guestDetails.pincode)) {
+			toast.error("Please fill in all guest details");
 			return;
 		}
 
 		setIsOrdering(true);
+		
+		// For Guest, we need to create Item documents first since they don't exist in DB like user cart items do
+		let itemIdsStr: string[] = [];
+		if (user) {
+			itemIdsStr = userData.cartId || items.map((i) => i.$id);
+		} else {
+			try {
+				const itemPromises = items.map(it => axios.post("/api/item", {
+					productId: it.productId,
+					productName: it.productName,
+					quantity: it.quantity,
+					price: it.price,
+					slug: productMap[it.productId]?.slug || it.productId,
+					isGuest: true
+				}));
+				const itemRes = await Promise.all(itemPromises);
+				itemIdsStr = itemRes.map((r: any) => r.data.$id);
+			} catch (err) {
+				console.error("Failed to prepare guest items", err);
+				toast.error("Failed to prepare order");
+				setIsOrdering(false);
+				return;
+			}
+		}
 
 		if (paymentMethod === "online") {
 			try {
@@ -144,17 +210,26 @@ export default function CartPage() {
 					return;
 				}
 
-				const customerDetails = {
+				const customerDetails = user ? {
 					customerId: userData.$id,
 					totalAmount: subtotal,
 					name: userData.name,
 					email: userData.email,
-					phone: userData.phone || "9999999999"
+					phone: userData.phone || "9999999999",
+					itemId: itemIdsStr
+				} : {
+					customerId: "guest",
+					totalAmount: subtotal,
+					name: guestDetails.name,
+					email: guestDetails.email,
+					phone: guestDetails.phone,
+					itemId: itemIdsStr,
+					isGuest: true
 				};
 				
 				const sessionRes = await axios.post<any>("/api/user/online-order/create-cashfree", customerDetails);
 				if (sessionRes.data?.error) {
-					toast.error("Could not initiate payment");
+					toast.error(sessionRes.data.error || "Could not initiate payment");
 					setIsOrdering(false);
 					return;
 				}
@@ -176,7 +251,7 @@ export default function CartPage() {
 						console.log("Redirection");
 					}
 					if(result.paymentDetails){
-						verifyPayment(orderId);
+						verifyPayment(orderId, itemIdsStr);
 					}
 				});
 			} catch (error) {
@@ -186,23 +261,26 @@ export default function CartPage() {
 			}
 		} else {
 			try {
-				const itemIds = userData.cartId || items.map((i) => i.$id);
 				const res = await axios.post<any>("/api/user/online-order", {
-					customerId: userData.$id,
-					addressID: selectedAddress,
-					itemId: itemIds,
+					customerId: user ? userData.$id : "guest",
+					addressID: user ? selectedAddress : null,
+					itemId: itemIdsStr,
 					totalAmount: subtotal,
 					shipping_charge: 0.0,
 					paymentType: "cod",
+					isGuest: !user,
+					guestEmail: !user ? guestDetails.email : undefined,
+					guestDetails: !user ? guestDetails : undefined
 				});
 
 				if (res.data?.error) {
 					toast.error("Failed to create order");
 				} else {
 					toast.success("Order placed successfully");
-					// refresh customer data (will clear cart)
-					if (setUserData && userData.$id) {
+					if (user && setUserData && userData.$id) {
 						await setUserData(userData.$id);
+					} else {
+						clearLocalCart();
 					}
 					setItems([]);
 				}
@@ -217,10 +295,16 @@ export default function CartPage() {
 
 	const handleUpdateQuantity = async (itemId: string, newQty: number) => {
 		if (newQty < 1) {
-			// remove item
 			await handleRemove(itemId);
 			return;
 		}
+		
+		if (!user) {
+			updateLocalCartQty(itemId, newQty);
+			setItems((prev) => prev.map((it) => (it.$id === itemId ? { ...it, quantity: newQty } : it)));
+			return;
+		}
+
 		try {
 			const res = await axios.patch<any>('/api/item', { id: itemId, quantity: newQty });
 			if (res.data?.error) {
@@ -235,6 +319,13 @@ export default function CartPage() {
 	};
 
 	const handleRemove = async (itemId: string) => {
+		if (!user) {
+			removeFromLocalCart(itemId);
+			setItems((prev) => prev.filter((it) => it.$id !== itemId));
+			toast.success('Item removed');
+			return;
+		}
+
 		if (!userData || !userData.$id) {
 			toast.error('No user');
 			return;
@@ -254,6 +345,11 @@ export default function CartPage() {
 		}
 	};
 
+	const handleGuestChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		const { name, value } = e.target;
+		setGuestDetails(prev => ({ ...prev, [name]: value }));
+	};
+
 	return (
 		<div className="max-w-6xl mx-auto sm:p-6 p-4 min-h-[80vh]">
 			<h1 className="text-3xl font-bold mb-8 text-gray-900 dark:text-gray-100">Shopping Cart</h1>
@@ -270,7 +366,7 @@ export default function CartPage() {
 					<h2 className="text-2xl font-bold mb-3 text-gray-900 dark:text-gray-100">Your cart is empty</h2>
 					<p className="text-gray-500 mb-8 text-center max-w-md">Looks like you haven&apos;t added anything to your cart yet. Browse our products and find something you love!</p>
 					<button 
-						onClick={() => router.push('/')} 
+						onClick={() => router.push('/shop')} 
 						className="px-8 py-3 bg-primary text-white font-medium rounded-xl hover:bg-primary/90 transition-all shadow-md hover:shadow-lg active:scale-95"
 					>
 						Start Shopping
@@ -345,7 +441,7 @@ export default function CartPage() {
 					</div>
 
 					{/* Order Summary Section */}
-					<div className="w-full lg:w-105 shrink-0">
+					<div className="w-full lg:w-[420px] shrink-0">
 						<div className="p-6 border rounded-2xl bg-card shadow-sm sticky top-24 space-y-8">
 							<h2 className="text-2xl font-bold border-b pb-4">Order Summary</h2>
 							
@@ -360,31 +456,51 @@ export default function CartPage() {
 							)}
 							
 							<div className="border-t pt-6">
-								<h3 className="font-semibold mb-4 flex items-center gap-2 text-lg"><IconMapPin size={20} className="text-primary/90"/> Shipping Address</h3>
-								{addresses.length > 0 ? (
-									<div className="space-y-3 max-h-75 overflow-y-auto pr-2 custom-scrollbar">
-										{addresses.map((address) => (
-											<label key={address.$id} className={`flex items-start gap-4 p-4 border rounded-xl cursor-pointer transition-all hover:shadow-md ${selectedAddress === address.$id ? 'border-primary/50 bg-primary/5 dark:bg-primary/10 ring-1 ring-primary/50' : 'hover:border-gray-400'}`}>
-												<input
-													type="radio"
-													name="address"
-													value={address.$id}
-													checked={selectedAddress === address.$id}
-													onChange={(e) => setSelectedAddress(e.target.value)}
-													className="mt-1.5 w-4 h-4 text-primary bg-gray-100 border-gray-300 focus:ring-primary/50 dark:focus:ring-primary/60 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-												/>
-												<div className="text-sm flex-1">
-													<p className="font-semibold text-gray-900 dark:text-gray-100 text-base mb-1">{address.location}</p>
-													<p className="text-gray-600 dark:text-gray-400">{address.city}, {address.state} {address.pincode}</p>
-													<p className="text-gray-600 dark:text-gray-400 mt-1">{address.phone}</p>
-												</div>
-											</label>
-										))}
-									</div>
+								{user ? (
+									<>
+										<h3 className="font-semibold mb-4 flex items-center gap-2 text-lg"><IconMapPin size={20} className="text-primary/90"/> Shipping Address</h3>
+										{addresses.length > 0 ? (
+											<div className="space-y-3 max-h-75 overflow-y-auto pr-2 custom-scrollbar">
+												{addresses.map((address) => (
+													<label key={address.$id} className={`flex items-start gap-4 p-4 border rounded-xl cursor-pointer transition-all hover:shadow-md ${selectedAddress === address.$id ? 'border-primary/50 bg-primary/5 dark:bg-primary/10 ring-1 ring-primary/50' : 'hover:border-gray-400'}`}>
+														<input
+															type="radio"
+															name="address"
+															value={address.$id}
+															checked={selectedAddress === address.$id}
+															onChange={(e) => setSelectedAddress(e.target.value)}
+															className="mt-1.5 w-4 h-4 text-primary bg-gray-100 border-gray-300 focus:ring-primary/50 dark:focus:ring-primary/60 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+														/>
+														<div className="text-sm flex-1">
+															<p className="font-semibold text-gray-900 dark:text-gray-100 text-base mb-1">{address.location}</p>
+															<p className="text-gray-600 dark:text-gray-400">{address.city}, {address.state} {address.pincode}</p>
+															<p className="text-gray-600 dark:text-gray-400 mt-1">{address.phone}</p>
+														</div>
+													</label>
+												))}
+											</div>
+										) : (
+											<div className="text-sm p-4 bg-yellow-50 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-200 rounded-xl border border-yellow-200 dark:border-yellow-900/50">
+												No addresses found. <a href="/user/" className="font-bold underline hover:text-yellow-900 dark:hover:text-yellow-100">Add one in your profile</a>.
+											</div>
+										)}
+									</>
 								) : (
-									<div className="text-sm p-4 bg-yellow-50 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-200 rounded-xl border border-yellow-200 dark:border-yellow-900/50">
-										No addresses found. <a href="/user/" className="font-bold underline hover:text-yellow-900 dark:hover:text-yellow-100">Add one in your profile</a>.
-									</div>
+									<>
+										<h3 className="font-semibold mb-4 flex items-center gap-2 text-lg"><IconUser size={20} className="text-primary/90"/> Guest Checkout</h3>
+										<p className="text-xs text-gray-500 mb-4">Orders will be linked to your account if you sign up later using this email.</p>
+										<div className="space-y-3">
+											<input required type="text" name="name" value={guestDetails.name} onChange={handleGuestChange} placeholder="Full Name" className="w-full p-3 border rounded-xl text-sm" />
+											<input required type="email" name="email" value={guestDetails.email} onChange={handleGuestChange} placeholder="Email Address" className="w-full p-3 border rounded-xl text-sm" />
+											<input required type="tel" name="phone" value={guestDetails.phone} onChange={handleGuestChange} placeholder="Phone Number" className="w-full p-3 border rounded-xl text-sm" />
+											<input required type="text" name="address" value={guestDetails.address} onChange={handleGuestChange} placeholder="Address Line 1" className="w-full p-3 border rounded-xl text-sm" />
+											<div className="grid grid-cols-2 gap-3">
+												<input required type="text" name="city" value={guestDetails.city} onChange={handleGuestChange} placeholder="City" className="w-full p-3 border rounded-xl text-sm" />
+												<input required type="text" name="state" value={guestDetails.state} onChange={handleGuestChange} placeholder="State" className="w-full p-3 border rounded-xl text-sm" />
+											</div>
+											<input required type="text" name="pincode" value={guestDetails.pincode} onChange={handleGuestChange} placeholder="Pincode" className="w-full p-3 border rounded-xl text-sm" />
+										</div>
+									</>
 								)}
 							</div>
 							
@@ -426,7 +542,7 @@ export default function CartPage() {
 								
 								<button
 									onClick={handleCreateOrder}
-									disabled={isOrdering || addresses.length === 0 || hasUnavailableItems}
+									disabled={isOrdering || (user && addresses.length === 0) || hasUnavailableItems}
 									className="w-full py-4 bg-primary hover:bg-primary/90 text-white font-bold text-lg rounded-xl shadow-md hover:shadow-lg disabled:opacity-50 disabled:shadow-none transition-all flex justify-center items-center gap-3 active:scale-[0.98]"
 								>
 									{isOrdering ? (

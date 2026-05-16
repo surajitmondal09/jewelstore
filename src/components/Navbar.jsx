@@ -14,12 +14,14 @@ import {
   IconMenu2, 
   IconX,
   IconInfoCircle,
-  IconMail
+  IconMail,
+  IconTruck
 } from "@tabler/icons-react";
 import Image from 'next/image';  
 import { useRouter, usePathname } from 'next/navigation'; 
 import { useAuthStore } from "@/store/Auth";
 import { useDataStore } from "@/store/Data";
+import { useLocalStore } from "@/store/LocalStore";
 import ClickAwayListener from 'react-click-away-listener';
 import Link from "next/link";
 import { client } from "@/models/client/config";
@@ -32,6 +34,7 @@ function Navbar() {
   
   const { logout, user, theme, darkTheme, lightTheme } = useAuthStore();
   const { userData, setUserData } = useDataStore();
+  const { localCart, localLiked } = useLocalStore();
   
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -78,6 +81,7 @@ function Navbar() {
   const navLinks = [
     { name: "Home", href: "/", icon: <IconHome size={20} /> },
     { name: "Shop", href: "/shop", icon: <IconBuildingStore size={20} /> },
+    ...(user ? [] : [{ name: "Track Order", href: "/track-order", icon: <IconTruck size={20} /> }]),
     { name: "About", href: "/about", icon: <IconInfoCircle size={20} /> },
     { name: "Contact", href: "/contact", icon: <IconMail size={20} /> },
   ];
@@ -102,7 +106,7 @@ function Navbar() {
                 href="/" 
                 className="flex items-center gap-2 group cursor-pointer"
               >
-                <span className="text-2xl font-black bg-linear-to-r from-primary/90 to-primary bg-clip-text text-transparent group-hover:from-primary group-hover:to-primary/80 transition-all duration-300 tracking-tight">
+                <span className="hidden sm:block text-2xl font-black bg-linear-to-r from-primary/90 to-primary bg-clip-text text-transparent group-hover:from-primary group-hover:to-primary/80 transition-all duration-300 tracking-tight">
                   Aura Jewels
                 </span>
               </Link>
@@ -154,6 +158,34 @@ function Navbar() {
                   )}
                 </button>
               )}
+
+              {/* Wishlist Icon */}
+              <button 
+                onClick={() => router.push("/user/liked")} 
+                className="relative p-2 rounded-full text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors focus:outline-none"
+                aria-label="Wishlist"
+              >
+                <IconHeart size={22} className="hover:scale-110 transition-transform" />
+                {((user && Array.from(new Set(userData?.likedProducts?.filter(Boolean))).length > 0) || (!user && localLiked?.length > 0)) && (
+                  <span className="absolute -top-1 -right-1 inline-flex items-center justify-center px-1.5 py-0.5 text-[10px] font-bold leading-none text-white bg-rose-500 rounded-full min-w-[18px]">
+                    {user ? Array.from(new Set(userData?.likedProducts?.filter(Boolean))).length : localLiked?.length}
+                  </span>
+                )}
+              </button>
+
+              {/* Cart Icon */}
+              <button 
+                onClick={() => router.push("/user/cart")} 
+                className="relative p-2 rounded-full text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors focus:outline-none"
+                aria-label="Cart"
+              >
+                <IconShoppingCart size={22} className="hover:scale-110 transition-transform" />
+                {((user && Array.from(new Set(userData?.cartId?.filter(Boolean))).length > 0) || (!user && localCart?.length > 0)) && (
+                  <span className="absolute -top-1 -right-1 inline-flex items-center justify-center px-1.5 py-0.5 text-[10px] font-bold leading-none text-white bg-primary rounded-full min-w-[18px]">
+                    {user ? Array.from(new Set(userData?.cartId?.filter(Boolean))).length : localCart?.length}
+                  </span>
+                )}
+              </button>
 
               {/* Theme Toggles */}
               <button 

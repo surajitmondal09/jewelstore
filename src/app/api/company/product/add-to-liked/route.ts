@@ -15,9 +15,11 @@ export async function POST(request: NextRequest) {
 
         const user = await tablesDB.getRow(db, customerTable, userID);
 
-        const likedProducts = user.likedProducts || [];
+        const likedProducts = (user.likedProducts || []).map((p: any) => typeof p === 'string' ? p : p.$id).filter(Boolean);
 
-        likedProducts.push(productID);
+        if (!likedProducts.includes(productID)) {
+            likedProducts.push(productID);
+        }
 
         const result = await tablesDB.updateRow(db, customerTable, userID, {
             likedProducts: likedProducts,
@@ -25,6 +27,7 @@ export async function POST(request: NextRequest) {
 
         return NextResponse.json(result);
     } catch (error) {
-        return NextResponse.json({ error });
+        console.error("Add to liked error:", error);
+        return NextResponse.json({ error: "Failed to add to liked" }, { status: 500 });
     }
 }

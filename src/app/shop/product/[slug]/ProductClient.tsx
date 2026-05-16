@@ -11,6 +11,7 @@ import Footer from "@/components/Footer"
 import { IconMinus, IconPlus, IconShoppingCart, IconHeartFilled, IconHeart, IconShare, IconMapPin, IconX, IconTruck, IconShieldCheck } from "@tabler/icons-react"
 import { useAuthStore } from "@/store/Auth"
 import { useDataStore } from "@/store/Data"
+import { useLocalStore } from "@/store/LocalStore"
 import LoadingProduct from "./loading"
 import { Skeleton } from '@/components/ui/skeleton'
 // @ts-ignore
@@ -42,6 +43,7 @@ export default function ProductPage() {
   const params: any = useParams()
   const slug = params?.slug
   const {user} = useAuthStore()
+  const { localCart, localLiked, addToLocalCart, toggleLocalLiked } = useLocalStore()
   
   const {userData, setUserData} = useDataStore()
 
@@ -84,11 +86,13 @@ export default function ProductPage() {
   }, [slug])
 
   useEffect(() => {
-    if (userData && product) {
+    if (userData && product && user) {
       const likedList = userData.likedProducts || []      
       setIsLiked(likedList.includes(product.$id))
+    } else if (!user && product) {
+      setIsLiked(localLiked.includes(product.$id))
     }
-  }, [userData, product])
+  }, [userData, product, user, localLiked])
 
   useEffect(() => {
     if (product?.category) {
@@ -100,7 +104,7 @@ export default function ProductPage() {
     setLoading(true)
     try {
       const resp = await axios.get("/api/company/product")
-      const all = resp?.data?.rows || []
+      const all = resp?.data?.documents || resp?.data?.rows || []
       const found = all.find((p: any) => p.slug === slug)
       setProduct(found || null)
     } catch (err) {
@@ -168,7 +172,7 @@ export default function ProductPage() {
       const resp = await axios.get("/api/company/product/get_by_category", {
         params: { categoryName },
       })
-      const allRelated = resp?.data?.rows || []
+      const allRelated = resp?.data?.documents || resp?.data?.rows || []
       const filtered = allRelated.filter((p: any) => p.slug !== slug).slice(0, 10)
       setRelatedProducts(filtered)
     } catch (err) {
@@ -183,8 +187,16 @@ export default function ProductPage() {
   const addToCart = () => {
     if (!product) return
     if (!user || !userData) {
-        toast.error("Please login to add to cart")
-        return
+        addToLocalCart({
+          productID: product.$id,
+          productName: product.productName,
+          slug: product.slug,
+          price: product.finalPrice,
+          qty: qty,
+          images: product.images
+        });
+        toast.success(`${qty} x product added to cart`);
+        return;
     }
     try {
         const res = axios.post("/api/user/cart/add", {customerID: userData?.$id, productID: product.$id, productName: product.productName, slug: product.slug, price: product.finalPrice, qty: qty})
@@ -206,7 +218,15 @@ export default function ProductPage() {
 
   const addToCartRelated = async (relatedProduct: any) => {
     if (!user || !userData) {
-      toast.error("Please login to add items to cart");
+      addToLocalCart({
+        productID: relatedProduct.$id,
+        productName: relatedProduct.productName,
+        slug: relatedProduct.slug,
+        price: relatedProduct.finalPrice,
+        qty: 1,
+        images: relatedProduct.images
+      });
+      toast.success("Added to cart!");
       return;
     }
     
@@ -234,7 +254,9 @@ export default function ProductPage() {
 
   const toggleLikedRelated = async (relatedProduct: any) => {
     if (!user || !userData) {
-      toast.error("Please login to add to wishlist");
+      const isLikedCheck = localLiked.includes(relatedProduct.$id);
+      toggleLocalLiked(relatedProduct.$id);
+      toast.success(isLikedCheck ? "Removed from wishlist" : "Added to wishlist!");
       return;
     }
 
@@ -265,7 +287,15 @@ export default function ProductPage() {
 
   const handleOrderNow = () => {
     if (!user || !userData) {
-        toast.error("Please login to place an order");
+        addToLocalCart({
+          productID: product.$id,
+          productName: product.productName,
+          slug: product.slug,
+          price: product.finalPrice,
+          qty: qty,
+          images: product.images
+        });
+        router.push("/user/cart");
         return;
     }
     setShowDirectCheckout(true);
@@ -503,7 +533,9 @@ export default function ProductPage() {
                     <button 
                       onClick={() => { 
                         if (!user || !userData) {
-                          toast.error("Please login to add to wishlist");
+                          const isLikedCheck = localLiked.includes(product.$id);
+                          toggleLocalLiked(product.$id);
+                          toast.success(isLikedCheck ? "Removed from wishlist" : "Added to wishlist!");
                           return;
                         }
                         isLiked ? removeFromLiked(user.$id, product.$id) : addToLiked(user.$id, product.$id) 
@@ -665,7 +697,7 @@ export default function ProductPage() {
             </div>
             <div className='grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6'>
                 {relatedProducts.map(({ $id, slug: relatedSlug, productName, images, price, finalPrice }) => {
-                  const likedList = userData?.likedProducts || [];
+                  const likedList = user ? (userData?.likedProducts || []) : localLiked;
                   const isLikedRelated = likedList.includes($id);
                   const relatedDiscount = price > finalPrice ? Math.round(((price - finalPrice) / price) * 100) : 0;
 

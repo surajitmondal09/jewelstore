@@ -13,6 +13,7 @@ import axios from "@/lib/axios";
 import { toast } from 'react-toastify'
 import { useAuthStore } from '@/store/Auth'
 import { useDataStore } from '@/store/Data'
+import { useLocalStore } from '@/store/LocalStore'
 import { Skeleton } from '@/components/ui/skeleton'
 
 const CarouselSkeleton = () => (
@@ -64,6 +65,7 @@ export default function Page() {
   const router = useRouter()
   const { user } = useAuthStore()
   const { userData, setUserData } = useDataStore()
+  const { addToLocalCart, toggleLocalLiked, localLiked } = useLocalStore()
   const [sliders, setSliders] = useState({ rows: [] })
   const [slidersLoading, setSlidersLoading] = useState(true);
   const [products, setProducts] = useState({ rows: [] })
@@ -144,7 +146,7 @@ export default function Page() {
     setProductsLoading(true);
     try {
       const response = await retry(() => axios.get<any>("/api/company/product"));
-      setProducts(response.data || { rows: [] })
+      setProducts(response.data || { documents: [] })
     } catch (err) {
       console.log(err)
       toast.error("Failed to load products")
@@ -180,8 +182,16 @@ export default function Page() {
   };
 
   const addToCart = async (product: any) => {
-    if (!user || !userData) {
-      toast.error("Please login to add items to cart");
+    if (!user) {
+      addToLocalCart({
+        productID: product.$id,
+        productName: product.productName,
+        slug: product.slug,
+        qty: 1,
+        price: product.finalPrice,
+        images: product.images
+      });
+      toast.success("Added to cart!");
       return;
     }
     
@@ -208,8 +218,9 @@ export default function Page() {
   };
 
   const toggleLiked = async (product: any) => {
-    if (!user || !userData) {
-      toast.error("Please login to add to wishlist");
+    if (!user) {
+      toggleLocalLiked(product.$id);
+      toast.success("Wishlist updated!");
       return;
     }
 
@@ -362,7 +373,7 @@ export default function Page() {
             {featuredProductSectionsLoading || productsLoading ? (
                 <ProductGridSkeleton /> 
             ) : featuredProductSections.map((section) => {
-                const sectionProducts = products?.rows?.filter((p: { $id: string }) => section.productIds.includes(p.$id)) || [];
+                const sectionProducts = (products?.documents || products?.rows || []).filter((p: { $id: string }) => section.productIds.includes(p.$id)) || [];
                 if (sectionProducts.length === 0) return null;
 
                 return (
@@ -383,7 +394,7 @@ export default function Page() {
 
                     <div className='grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6'>
                     {sectionProducts.map(({ $id, productName, images, price, finalPrice, slug }) => {
-                        const likedList = userData?.likedProducts || [];
+                        const likedList = user ? (userData?.likedProducts || []) : localLiked;
                         const isLiked = likedList.includes($id);
                         const product = { $id, productName, images, price, finalPrice, slug };
                         const discount = price > finalPrice ? Math.round(((price - finalPrice) / price) * 100) : 0;

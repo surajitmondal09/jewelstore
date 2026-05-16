@@ -4,6 +4,9 @@ import { persist } from "zustand/middleware";
 
 import {AppwriteException, ID, Models} from "appwrite"
 import { account } from "../models/client/config";
+import { useLocalStore } from "./LocalStore";
+import { useDataStore } from "./Data";
+import axios from "@/lib/axios";
 
 
 export interface UserPrefs {
@@ -51,7 +54,7 @@ interface IAuthStore {
 
 export const useAuthStore = create<IAuthStore>()(
   persist(
-    immer((set) => ({
+    immer((set, get) => ({
       session: null,
       jwt: null,
       user: null,
@@ -100,6 +103,24 @@ export const useAuthStore = create<IAuthStore>()(
 
           set({session, user, jwt})
           
+          try {
+            await useLocalStore.getState().syncData(user.$id);
+          } catch(e) {
+            console.error("Error syncing local data:", e);
+          }
+          
+          try {
+            await axios.post("/api/user/claim-guest-orders", { email: user.email });
+          } catch(e) {
+            console.error("Error claiming guest orders:", e);
+          }
+          
+          try {
+            await useDataStore.getState().setUserData(user.$id);
+          } catch(e) {
+            console.error("Error refreshing user data after sync:", e);
+          }
+          
           return { 
             success: true,
             user: user
@@ -111,7 +132,7 @@ export const useAuthStore = create<IAuthStore>()(
           return {
             success: false,
             error: error instanceof AppwriteException ? error: null,
-            user: this.user
+            user: get().user
           }
         }
       },
