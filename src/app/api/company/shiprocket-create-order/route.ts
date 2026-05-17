@@ -31,8 +31,11 @@ export async function POST(request: NextRequest) {
 
 		const data = await res.json();
 
-		if (!res.ok) {
-			return NextResponse.json({ error: "Failed to create Shiprocket order", details: data }, { status: res.status });
+		if (!res.ok || !data.order_id || data.status_code === 0 || data.status_code === 400 || data.status_code === 422) {
+			return NextResponse.json({ 
+                error: "Failed to create Shiprocket order", 
+                details: data 
+            }, { status: 400 });
 		}
 
 		// normalize response: Shiprocket may return order_id, shipment_id, awb

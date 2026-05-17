@@ -17,7 +17,8 @@ import {
   IconUser,
   IconReceipt,
   IconClock,
-  IconBox
+  IconBox,
+  IconSearch
 } from "@tabler/icons-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -44,13 +45,13 @@ type Customer = {
   pincode: string;
 };
 type addressData = {
-    $id: string;
-    customerId: string;
-    location: string;
-    city: string;
-    pincode: string;
-    state: string;
-    phone: string;
+  $id: string;
+  customerId: string;
+  location: string;
+  city: string;
+  pincode: string;
+  state: string;
+  phone: string;
 };
 
 type OnlineOrder = {
@@ -93,6 +94,7 @@ export default function OnlineOrdersPage() {
   const [processingOrders, setProcessingOrders] = useState<Set<string>>(new Set());
   const [showShipmentModal, setShowShipmentModal] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<OnlineOrder | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
   const [shipmentData, setShipmentData] = useState({
     order_id: "",
     order_date: "",
@@ -134,10 +136,12 @@ export default function OnlineOrdersPage() {
   }, []);
 
   // Fetch orders
-  const fetchOrders = async (page: number = 1, status: string = "all") => {
+  const fetchOrders = async (page: number = 1, status: string = "all", search: string = "") => {
     setLoading(true);
     try {
-      const query = status === "all" ? "" : `&status=${status}`;
+      let query = status === "all" ? "" : `&status=${status}`;
+      if (search) query += `&search=${encodeURIComponent(search)}`;
+
       const res = await axios.get<any>(`/api/company/online-orders?page=${page}&limit=20${query}`);
       setOrders((res.data as any).orders);
       setTotalPages((res.data as any).totalPages);
@@ -151,8 +155,11 @@ export default function OnlineOrdersPage() {
   };
 
   useEffect(() => {
-    fetchOrders(1, selectedStatus);
-  }, [selectedStatus]);
+    const handler = setTimeout(() => {
+      fetchOrders(1, selectedStatus, searchQuery);
+    }, 500);
+    return () => clearTimeout(handler);
+  }, [selectedStatus, searchQuery]);
 
   const handleCreateShipment = async (order: OnlineOrder) => {
     if (!shiprocketToken) {
@@ -162,30 +169,42 @@ export default function OnlineOrdersPage() {
 
     setSelectedOrder(order);
 
+    const nameParts = (order.customer?.name || "").trim().split(" ");
+    const firstName = nameParts[0] || "Customer";
+    const lastName = nameParts.length > 1 ? nameParts.slice(1).join(" ") : "-";
+
+    const d = new Date(order.$createdAt);
+    const pad = (n: number) => n.toString().padStart(2, "0");
+    const orderDateStr = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+
+    let phone = (order.addressData?.phone || "").replace(/\D/g, "");
+    if (phone.length > 10) phone = phone.slice(-10);
+    if (!phone) phone = "0000000000";
+
     // Pre-fill shipment data
     setShipmentData({
-      order_id: order.$id,
-      order_date: new Date(order.$createdAt).toISOString().split("T")[0],
+      order_id: `${order.$id}-${Math.floor(1000 + Math.random() * 9000)}`,
+      order_date: orderDateStr,
       pickup_location: "Home",
       channel_id: "",
-      billing_customer_name: order.customer.name || "",
-      billing_last_name: "",
-      billing_email: order.customer.email || "",
-      billing_phone: order.addressData.phone || "",
-      billing_address: order.addressData.location || "",
-      billing_city: order.addressData.city || "",
-      billing_state: order.addressData.state || "",
-      billing_pincode: order.addressData.pincode || "",
+      billing_customer_name: firstName,
+      billing_last_name: lastName,
+      billing_email: order.customer?.email || "customer@example.com",
+      billing_phone: phone,
+      billing_address: order.addressData?.location || "No Address Provided",
+      billing_city: order.addressData?.city || "Unknown",
+      billing_state: order.addressData?.state || "Unknown",
+      billing_pincode: order.addressData?.pincode || "000000",
       billing_country: "India",
       shipping_is_billing: true,
       order_items: order.items.map((item) => ({
-        name: item.productName,
-        sku: item.productId,
-        units: item.quantity,
-        selling_price: item.price,
+        name: item.productName || "Product",
+        sku: item.productId || "SKU",
+        units: item.quantity || 1,
+        selling_price: item.price || 0,
       })),
-      payment_method: order.paymentType === "cod" ? "COD" : "PREPAID",
-      sub_total: order.totalAmount,
+      payment_method: order.paymentType === "cod" ? "COD" : "Prepaid",
+      sub_total: order.totalAmount || 0,
       length: 5,
       breadth: 5,
       height: 5,
@@ -201,15 +220,18 @@ export default function OnlineOrdersPage() {
       return;
     }
 
-    const processing = new Set(processingOrders);
-    processing.add(selectedOrder.$id);
-    setProcessingOrders(processing);
+    setProcessingOrders((prev) => new Set(prev).add(selectedOrder.$id));
 
     try {
+      const payload = { ...shipmentData };
+      if (!payload.channel_id) {
+        delete (payload as any).channel_id;
+      }
+
       // Create order in Shiprocket
       const res = await axios.post<any>("/api/company/shiprocket-create-order", {
         token: shiprocketToken,
-        order: shipmentData,
+        order: payload,
       });
 
       if ((res.data as any).success) {
@@ -226,13 +248,28 @@ export default function OnlineOrdersPage() {
         fetchOrders(currentPage, selectedStatus);
         setShowShipmentModal(false);
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error("Failed to create shipment:", err);
-      toast.error("Failed to create shipment");
+      const errorData = err.response?.data;
+      
+      let errorMsg = errorData?.error || err.message || "Failed to create shipment";
+      let detailsStr = "";
+
+      if (errorData?.details) {
+         if (typeof errorData.details === 'object') {
+             detailsStr = JSON.stringify(errorData.details);
+         } else {
+             detailsStr = String(errorData.details);
+         }
+      }
+
+      toast.error(detailsStr ? `${errorMsg}: ${detailsStr}` : errorMsg, { autoClose: 10000 });
     } finally {
-      const updated = new Set(processingOrders);
-      updated.delete(selectedOrder.$id);
-      setProcessingOrders(updated);
+      setProcessingOrders((prev) => {
+        const updated = new Set(prev);
+        updated.delete(selectedOrder.$id);
+        return updated;
+      });
     }
   };
 
@@ -280,26 +317,39 @@ export default function OnlineOrdersPage() {
         </div>
       </div>
 
-      {/* Status Filter */}
-      <div className="flex gap-2 overflow-x-auto pb-4 scrollbar-hide">
-        {["all", "placed", "processing", "shipped", "delivered", "cancelled by customer", "refunded", "cancelled by seller"].map(
-          (status) => (
-            <button
-              key={status}
-              onClick={() => {
-                setSelectedStatus(status);
-                setCurrentPage(1);
-              }}
-              className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all duration-200 border ${
-                selectedStatus === status
-                  ? "bg-primary text-primary-foreground border-primary shadow-sm"
-                  : "bg-background text-muted-foreground border-border hover:bg-accent hover:text-accent-foreground"
-              }`}
-            >
-              {status.charAt(0).toUpperCase() + status.slice(1)}
-            </button>
-          )
-        )}
+      {/* Filters and Search */}
+      <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between mb-2">
+        {/* Status Filter */}
+        <div className="flex gap-2 overflow-x-auto pb-2 md:pb-0 scrollbar-hide w-full md:w-auto">
+          {["all", "placed", "processing", "shipped", "delivered", "cancelled by customer", "refunded", "cancelled by seller"].map(
+            (status) => (
+              <button
+                key={status}
+                onClick={() => {
+                  setSelectedStatus(status);
+                  setCurrentPage(1);
+                }}
+                className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all duration-200 border ${selectedStatus === status
+                    ? "bg-primary text-primary-foreground border-primary shadow-sm"
+                    : "bg-background text-muted-foreground border-border hover:bg-accent hover:text-accent-foreground"
+                  }`}
+              >
+                {status.charAt(0).toUpperCase() + status.slice(1)}
+              </button>
+            )
+          )}
+        </div>
+
+        {/* Search */}
+        <div className="relative w-full md:w-72 shrink-0">
+          <IconSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground w-4 h-4" />
+          <Input
+            placeholder="Search by phone or Order ID..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-9 rounded-full bg-background/50 border-muted focus-visible:ring-primary/20"
+          />
+        </div>
       </div>
 
       {/* Orders List */}
@@ -338,9 +388,9 @@ export default function OnlineOrdersPage() {
                         </span>
                       </div>
                       <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-muted-foreground">
-                        <div className="flex items-center gap-1.5"><IconUser size={16}/> <span className="font-medium text-foreground">{order.customer.name}</span></div>
+                        <div className="flex items-center gap-1.5"><IconUser size={16} /> <span className="font-medium text-foreground">{order.customer?.name || "Unknown Customer"}</span></div>
                         <span className="hidden sm:inline text-muted-foreground/30">•</span>
-                        <div className="flex items-center gap-1.5"><IconClock size={16}/> {new Date(order.$createdAt).toLocaleDateString()}</div>
+                        <div className="flex items-center gap-1.5"><IconClock size={16} /> {new Date(order.$createdAt).toLocaleDateString()}</div>
                       </div>
                     </div>
                   </div>
@@ -372,18 +422,18 @@ export default function OnlineOrdersPage() {
                         <div className="space-y-3 text-sm">
                           <div className="flex items-center gap-3 font-medium text-foreground">
                             <div className="bg-muted p-1.5 rounded-md"><IconUser size={16} className="text-muted-foreground" /></div>
-                            {order.customer.name}
+                            {order.customer?.name || "Unknown Customer"}
                           </div>
                           <div className="flex items-center gap-3 text-muted-foreground">
                             <div className="bg-muted p-1.5 rounded-md"><IconPhone size={16} /></div>
-                            {order.addressData.phone}
+                            {order.addressData?.phone || "N/A"}
                           </div>
                           <div className="flex items-start gap-3 text-muted-foreground mt-3 pt-3 border-t">
                             <div className="bg-muted p-1.5 rounded-md shrink-0"><IconMapPin size={16} /></div>
                             <div className="space-y-1">
-                              <p className="font-medium text-foreground">{order.addressData.location}</p>
-                              <p>{order.addressData.city}, {order.addressData.state}</p>
-                              <p>PIN: {order.addressData.pincode}</p>
+                              <p className="font-medium text-foreground">{order.addressData?.location || "N/A"}</p>
+                              <p>{order.addressData?.city || "N/A"}, {order.addressData?.state || "N/A"}</p>
+                              <p>PIN: {order.addressData?.pincode || "N/A"}</p>
                             </div>
                           </div>
                         </div>
@@ -521,7 +571,7 @@ export default function OnlineOrdersPage() {
             <Button
               variant="outline"
               className="flex-1 sm:flex-none"
-              onClick={() => fetchOrders(currentPage - 1, selectedStatus)}
+              onClick={() => fetchOrders(currentPage - 1, selectedStatus, searchQuery)}
               disabled={currentPage <= 1}
             >
               Previous
@@ -529,7 +579,7 @@ export default function OnlineOrdersPage() {
             <Button
               variant="outline"
               className="flex-1 sm:flex-none"
-              onClick={() => fetchOrders(currentPage + 1, selectedStatus)}
+              onClick={() => fetchOrders(currentPage + 1, selectedStatus, searchQuery)}
               disabled={currentPage >= totalPages}
             >
               Next
@@ -552,16 +602,29 @@ export default function OnlineOrdersPage() {
               </Button>
             </CardHeader>
             <CardContent className="overflow-y-auto p-6 space-y-6">
-              <div className="space-y-3">
-                <Label className="text-sm font-semibold flex items-center gap-2 text-foreground">
-                  Channel ID <span className="text-xs font-normal text-muted-foreground">(Optional)</span>
-                </Label>
-                <Input
-                  value={shipmentData.channel_id}
-                  onChange={(e) => setShipmentData({ ...shipmentData, channel_id: e.target.value })}
-                  placeholder="e.g., 123456"
-                  className="bg-muted/50 border-muted"
-                />
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-3">
+                  <Label className="text-sm font-semibold flex items-center gap-2 text-foreground">
+                    Pickup Location Name
+                  </Label>
+                  <Input
+                    value={shipmentData.pickup_location}
+                    onChange={(e) => setShipmentData({ ...shipmentData, pickup_location: e.target.value })}
+                    placeholder="e.g., Primary"
+                    className="bg-muted/50 border-muted"
+                  />
+                </div>
+                <div className="space-y-3">
+                  <Label className="text-sm font-semibold flex items-center gap-2 text-foreground">
+                    Channel ID <span className="text-xs font-normal text-muted-foreground">(Optional)</span>
+                  </Label>
+                  <Input
+                    value={shipmentData.channel_id}
+                    onChange={(e) => setShipmentData({ ...shipmentData, channel_id: e.target.value })}
+                    placeholder="e.g., 123456"
+                    className="bg-muted/50 border-muted"
+                  />
+                </div>
               </div>
 
               <div className="space-y-4">
