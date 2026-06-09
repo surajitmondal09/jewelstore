@@ -62,4 +62,4 @@ bun dev
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result. The environment requires connected `NEXT_PUBLIC_APPWRITE_PROJECT_ID` and `NEXT_PUBLIC_APPWRITE_HOST_URL` variables.
 
 ## 🤝 Deployment
-The application is fully architectured around Serverless Edge functions. The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com).
+https://jewelstore.appwrite.network/
