@@ -1,6 +1,6 @@
-# TechStore - E-Commerce Platform
+# JewelStore - E-Commerce Platform
 
-TechStore is a full-stack, aesthetically modern E-Commerce web application built using **Next.js 14**, **TypeScript**, and **Tailwind CSS**. It is designed with robust state-management, real-time database capabilities via **Appwrite**, and fully integrated logistics routing via **Shiprocket**.
+JewelStore is a full-stack, aesthetically modern E-Commerce web application built using **Next.js 14**, **TypeScript**, and **Tailwind CSS**. It is designed with robust state-management, real-time database capabilities via **Appwrite**, and fully integrated logistics routing via **Shiprocket**.
 
 ## 🚀 Core Technologies
 - **Framework:** Next.js (App Router)
